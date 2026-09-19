@@ -1,0 +1,974 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Persona 4 Golden Social Links Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Big+Shoulders+Display:wght@800;900&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --ink:#0d0e09;
+  --panel:#16170f;
+  --panel-2:#212216;
+  --line:#3b3c2a;
+  --acc:#ffd21f;
+  --acc-hi:#ffe35e;
+  --on-acc:#12130a;
+  --paper:#f7f4e6;
+  --paper-2:#dcd8c2;
+  --muted:#a6a38c;
+  --off:#2b2c1e;
+  --rain:#7fd0e6;
+  --f-display:'Big Shoulders Display','Impact','Arial Narrow',sans-serif;
+  --f-ui:'Barlow Condensed','Arial Narrow',sans-serif;
+  --f-body:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--ink);color:var(--paper);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.app{max-width:1360px;margin:0 auto;padding-inline:16px;padding-block:24px 56px}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+button:focus-visible{outline:3px solid var(--acc-hi);outline-offset:2px}
+h1,h2{margin:0;font-family:var(--f-display);font-weight:900;text-transform:uppercase;text-wrap:balance}
+
+/* ---------- header ---------- */
+.top{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:flex-end;justify-content:space-between;margin-bottom:28px}
+.kicker{display:block;font-family:var(--f-ui);font-weight:600;font-size:14px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+h1{font-size:clamp(46px,9vw,88px);line-height:.92}
+h1 span{display:inline-block;background:var(--acc);color:var(--on-acc);padding:.04em .26em .02em .2em;transform:skewX(-9deg);box-shadow:6px 6px 0 #000,7px 7px 0 var(--line)}
+.meter{display:flex;flex-wrap:wrap;gap:18px 32px}
+.kpi{min-width:150px}
+.kpi .lbl{font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.kpi .num{font-family:var(--f-display);font-weight:900;font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .num small{font-size:24px;color:var(--muted);font-weight:800}
+.bar{height:8px;background:var(--off);margin-top:8px;clip-path:polygon(0 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .25s ease}
+
+.tools{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-bottom:22px}
+.btn{font-family:var(--f-ui);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border:2px solid var(--paper-2);color:var(--paper);display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:var(--acc-hi);color:#fff}
+.btn[aria-checked="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.btn.warn{border-color:var(--acc);background:var(--acc);color:var(--on-acc)}
+.sw{width:14px;height:14px;border:2px solid currentColor;display:inline-block;position:relative}
+.btn[aria-checked="true"] .sw::after{content:"";position:absolute;inset:1px;background:currentColor}
+.status{font-family:var(--f-ui);font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-left:auto}
+.hint{margin:0 0 16px;color:var(--muted);max-width:68ch}
+
+h2{font-size:30px;letter-spacing:.02em;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+h2::before{content:"";width:14px;height:28px;background:var(--acc);transform:skewX(-14deg);flex:none}
+section{margin-bottom:44px}
+
+/* ---------- week ---------- */
+.week{display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
+.day{display:grid;grid-template-columns:96px minmax(0,1fr) minmax(0,1fr);gap:0;align-items:stretch}
+.dh{background:var(--acc);color:var(--on-acc);padding:10px 14px;display:flex;flex-direction:column;justify-content:center;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+.dh b{font-family:var(--f-display);font-weight:900;font-size:36px;line-height:1;letter-spacing:.02em}
+.dh span{font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.slot{padding:10px 10px 12px;min-width:0}
+.slot.d{background:var(--paper);color:var(--ink);--focus:var(--on-acc)}
+.slot.n{background:var(--panel);border:1px solid var(--line);--focus:#fff}
+.slot button:focus-visible{outline-color:var(--focus)}
+.sh{display:flex;align-items:center;gap:7px;font-family:var(--f-ui);font-weight:700;font-size:13px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+.sh svg{flex:none}
+.sh em{font-style:normal;margin-left:auto;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.slot.d .sh{color:#5b5844}
+.slot.n .sh{color:var(--muted)}
+.chips{display:flex;flex-direction:column;gap:5px}
+.empty{margin:4px 0;font-family:var(--f-ui);font-size:14px;letter-spacing:.1em;text-transform:uppercase;opacity:.6}
+
+.chip{display:grid;grid-template-columns:2.1em minmax(0,1fr) auto;align-items:center;gap:6px;width:100%;text-align:left;padding:6px 8px;box-shadow:3px 3px 0 rgba(0,0,0,.55);transition:transform .08s ease,background-color .12s ease}
+.chip:hover{transform:translate(-1px,-1px)}
+.chip .cn{font-family:var(--f-ui);font-weight:600;font-size:12px;letter-spacing:.04em;opacity:.7}
+.chip .nm{font-family:var(--f-ui);font-weight:700;font-size:18px;line-height:1.1;letter-spacing:.03em;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip .nm i{font-style:normal;margin-left:2px}
+.chip .nm.long{font-size:15px;letter-spacing:0}
+.chip .rp{font-family:var(--f-ui);font-weight:700;font-size:13px;min-width:30px;text-align:center;padding:1px 6px;font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;justify-content:center;height:20px}
+.slot.d .chip{background:var(--ink);color:var(--paper)}
+.slot.d .chip .nm i{color:var(--acc-hi)}
+.slot.d .chip:hover{background:var(--acc);color:var(--on-acc)}
+.slot.d .chip:hover .nm i,.slot.d .chip:hover .rain{color:var(--on-acc)}
+.slot.d .chip .rp{background:var(--acc);color:var(--on-acc)}
+.slot.d .chip:hover .rp{background:var(--ink);color:var(--paper)}
+.slot.n .chip{background:var(--acc);color:var(--on-acc)}
+.slot.n .chip .nm i,.slot.n .chip .rain{color:var(--on-acc)}
+.slot.n .chip:hover{background:var(--acc-hi)}
+.slot.n .chip .rp{background:var(--ink);color:var(--paper)}
+.slot.d .chip.is-done{background:#d9d5c0;color:#7c7965;box-shadow:none}
+.slot.d .chip.is-done .rp{background:#7c7965;color:#fff}
+.slot.d .chip.is-done .rain,.slot.d .chip.is-done .nm i{color:#7c7965}
+.slot.n .chip.is-done{background:var(--panel-2);color:var(--muted);box-shadow:none}
+.slot.n .chip.is-done .rp{background:var(--off);color:var(--paper-2)}
+.slot.n .chip.is-done .rain,.slot.n .chip.is-done .nm i{color:var(--muted)}
+.chip.is-done .nm{text-decoration:line-through;text-decoration-thickness:2px}
+
+@media (max-width:719px){
+  .day{grid-template-columns:minmax(0,1fr)}
+  .dh{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:12px;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+  .dh b{font-size:30px}
+}
+@media (min-width:1100px){
+  .week{grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:auto auto auto;column-gap:8px;row-gap:8px}
+  .day{grid-template-columns:minmax(0,1fr);grid-row:span 3;grid-template-rows:subgrid;row-gap:normal}
+  .dh{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);padding:10px 12px}
+  .chip{grid-template-columns:minmax(0,1fr) auto;padding:6px 6px 6px 8px}
+  .chip .cn{display:none}
+  .chip .nm{font-size:17px}
+  .chip .nm.long{font-size:15px}
+  .chip .rp{min-width:26px;padding:1px 4px}
+}
+
+/* ---------- roster ---------- */
+.roster{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:34px minmax(0,1.2fr) auto auto;gap:10px 22px;align-items:center;padding:12px 10px;border-bottom:1px solid var(--line);background:var(--panel)}
+.row:nth-child(even){background:#1a1b12}
+.row.is-done .who b{text-decoration:line-through;text-decoration-thickness:2px;color:var(--muted)}
+.ck{width:32px;height:32px;border:2px solid var(--paper-2);display:grid;place-items:center;color:transparent}
+.ck:hover{border-color:var(--acc-hi)}
+.row.is-done .ck{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}
+.who{min-width:0}
+.who b{display:block;font-family:var(--f-ui);font-weight:700;font-size:24px;line-height:1.05;letter-spacing:.03em;text-transform:uppercase}
+.who span{display:block;font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+.who small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.strip{display:flex;gap:3px}
+.md{display:grid;gap:2px;justify-items:center;font-family:var(--f-ui);font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.04em}
+.sq{width:17px;height:9px;background:var(--off)}
+.sq.on{background:var(--acc)}
+.sq.maybe{background:repeating-linear-gradient(135deg,var(--acc) 0 2px,var(--off) 2px 4px)}
+.rank{display:flex;align-items:center;gap:12px}
+.pw{display:grid}
+.pips{display:flex;gap:3px}
+.pip{width:24px;height:32px;background:var(--off);color:var(--muted);font-family:var(--f-ui);font-weight:700;font-size:13px;transform:skewX(-10deg);font-variant-numeric:tabular-nums}
+.pip:hover{background:#4a4a35;color:#fff}
+.pip.on{background:var(--acc);color:var(--on-acc)}
+.pip.on:hover{background:var(--acc-hi)}
+.pip[aria-checked="true"]{background:var(--paper);color:var(--ink)}
+.read{font-family:var(--f-display);font-weight:800;font-size:26px;min-width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--paper)}
+.read small{font-size:15px;color:var(--muted)}
+@media (max-width:959px){
+  .row{grid-template-columns:34px minmax(0,1fr);}
+  .strip,.rank,.trig{grid-column:1 / -1}
+  .strip,.trig{padding-left:44px}
+  .rank{padding-left:44px;flex-wrap:wrap}
+}
+
+/* ---------- notes ---------- */
+.notes{margin:0;padding:0;list-style:none;display:grid;gap:10px;max-width:78ch}
+.notes li{padding-left:20px;position:relative;color:var(--paper-2)}
+.notes li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:9px;background:var(--acc);transform:skewX(-14deg)}
+.notes b{color:#fff;font-weight:600}
+
+/* ---------- milestones ---------- */
+.jump{display:flex;flex-wrap:wrap;gap:8px 20px;margin:-8px 0 26px}
+.jump a{font-family:var(--f-ui);font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--paper-2);text-decoration:none;border-bottom:2px solid var(--acc);padding-bottom:2px}
+.jump a:hover{color:#fff;border-color:var(--acc-hi)}
+.jump a:focus-visible{outline:3px solid var(--acc-hi);outline-offset:3px}
+.sech{display:flex;align-items:center;gap:12px;flex:1;text-align:left;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit}
+.sech .chev{margin-left:auto;flex:none;width:11px;height:11px;border-right:3px solid var(--muted);border-bottom:3px solid var(--muted);transform:rotate(45deg) translate(-3px,-3px);transition:transform .15s}
+.sech[aria-expanded="false"] .chev{transform:rotate(-45deg)}
+.sech:hover .chev{border-color:var(--paper)}
+.colall{font-family:var(--f-ui);font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-left:auto}
+.colall:hover{color:var(--paper)}
+@media (prefers-reduced-motion:reduce){.sech .chev{transition:none}}
+.legend{margin:0 0 14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:14px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.tag{font-family:var(--f-ui);font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;display:inline-block;line-height:1.35;white-space:nowrap}
+.tag.stat{background:var(--paper);color:var(--ink)}
+.tag.mem{background:var(--acc);color:var(--on-acc)}
+.tag.fecha{border:1.5px solid var(--paper-2);color:var(--paper);padding:0 6px}
+.tag.req{background:var(--off);color:var(--paper-2)}
+.tag.perk{border:1.5px solid var(--acc);color:var(--acc);padding:0 6px}
+.tag.ev-start{background:var(--paper);color:var(--ink)}
+.tag.ev-unlock,.tag.ev-rank{border:1.5px solid var(--paper-2);color:var(--paper);padding:0 6px}
+.tag.ev-deadline{background:var(--acc);color:var(--on-acc)}
+.tag.ev-lock{background:var(--off);color:var(--paper-2)}
+.marks{display:flex;gap:3px;margin-top:5px;min-height:8px}
+.mk{width:24px;display:flex;flex-wrap:wrap;gap:2px;justify-content:center;align-content:flex-start}
+.mk i{display:block;width:6px;height:6px;transform:skewX(-10deg)}
+.mk .m-stat{background:var(--paper)}
+.mk .m-mem{background:var(--acc)}
+.mk .m-fecha{border:1.5px solid var(--paper-2)}
+.mk .m-req{background:var(--muted)}
+.mk .m-perk{border:1.5px solid var(--acc);background:transparent}
+.who .next{display:block;text-transform:none;letter-spacing:0;font-family:var(--f-body);font-weight:400;font-size:13px;color:var(--paper-2);margin-top:5px}
+.who .next b{display:inline;font-size:12px;line-height:1.4;font-family:var(--f-ui);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.who .next em{font-style:normal;color:var(--muted)}
+.who .next.lt b{color:var(--acc)}
+.ms{grid-column:1 / -1}
+.ms summary{cursor:pointer;font-family:var(--f-ui);font-weight:700;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--paper-2);list-style:none;display:inline-flex;align-items:center;gap:8px;padding:4px 0}
+.ms summary::-webkit-details-marker{display:none}
+.ms summary::before{content:"+";display:inline-grid;place-items:center;width:18px;height:18px;border:2px solid var(--paper-2);font-size:14px;line-height:1}
+.ms[open] summary::before{content:"–"}
+.ms summary:focus-visible{outline:3px solid var(--acc-hi);outline-offset:2px}
+.ms ul{list-style:none;margin:8px 0 2px;padding:0;display:grid;gap:7px}
+.ms li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.ms .r{font-family:var(--f-ui);font-weight:700;font-size:15px;min-width:40px;color:var(--acc);font-variant-numeric:tabular-nums}
+.ms .tx{flex:1 1 260px;min-width:0;color:var(--paper-2)}
+.ms .tx b{color:#fff;font-weight:600}
+.ms .tx em{font-style:normal;color:var(--muted)}
+.ms .ok{color:#fff;font-family:var(--f-ui);font-weight:700;letter-spacing:.06em;margin-left:6px}
+.dim{opacity:.45}
+.strike{text-decoration:line-through}
+
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);padding:14px 14px 12px}
+.card h3{margin:0 0 4px;font-family:var(--f-display);font-weight:900;font-size:26px;letter-spacing:.03em;text-transform:uppercase}
+.mine{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.mine .pips{gap:3px}
+.mine .pip{width:26px;height:26px;font-size:13px}
+.lv{display:grid;grid-template-columns:112px minmax(0,1fr);gap:4px 10px;padding:8px 0;border-top:1px solid var(--line)}
+.lv .n{font-family:var(--f-display);font-weight:900;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.lv .n small{display:block;font-family:var(--f-ui);font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.lv.met .n{color:var(--muted)}
+.lv .who2{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.ent{font-family:var(--f-ui);font-weight:700;font-size:16px;letter-spacing:.03em;text-transform:uppercase}
+.ent small{font-weight:600;font-size:13px;color:var(--acc);letter-spacing:.06em}
+.ent i{font-style:normal;font-family:var(--f-body);text-transform:none;font-weight:400;font-size:12px;color:var(--muted);letter-spacing:0}
+.nobody{color:var(--muted)}
+.ck2{color:var(--paper);font-family:var(--f-ui);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+
+.scroll{overflow-x:auto;border-top:1px solid var(--line)}
+.tbl{width:100%;min-width:760px;border-collapse:collapse}
+.tbl th{font-family:var(--f-ui);font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;background:var(--panel)}
+.tbl tr:nth-child(even) td{background:#1a1b12}
+.tbl .cf{font-family:var(--f-ui);font-weight:700;font-size:18px;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
+.tbl .cf small{display:block;font-size:12px;font-weight:600;letter-spacing:.14em;color:var(--acc)}
+.tbl .mn{font-weight:600;color:#fff}
+.tbl .rr{font-family:var(--f-display);font-weight:800;font-size:22px;white-space:nowrap}
+.tbl tr.later td{opacity:.55}
+
+.tl{list-style:none;margin:0;padding:0}
+.tl h3{margin:22px 0 4px;font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px}
+.tl h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.ti{display:grid;grid-template-columns:78px 112px minmax(0,1fr);gap:4px 12px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line)}
+.ti .dt{font-family:var(--f-display);font-weight:900;font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.ti .tx{color:var(--paper-2)}
+.ti .tx b{color:#fff;font-weight:600}
+@media (max-width:640px){
+  .ti{grid-template-columns:70px minmax(0,1fr)}
+  .ti .tx{grid-column:1 / -1}
+}
+.tl h3.cur{color:var(--paper)}
+.tl h3.cur::before{content:"";width:12px;height:22px;background:var(--acc);transform:skewX(-14deg)}
+
+/* ---------- game month ---------- */
+.monthbar{margin:0 0 22px;display:grid;gap:8px}
+.monthbar .lbl{font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.monthbar .lbl b{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.04em;color:var(--paper)}
+.mrow{display:flex;flex-wrap:wrap;gap:4px}
+.mb{min-width:54px;height:38px;padding:0 12px;background:var(--off);color:var(--paper-2);font-family:var(--f-ui);font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;transform:skewX(-10deg)}
+.mb:hover{background:#4a4a35;color:#fff}
+.mb[aria-checked="true"]{background:var(--paper);color:var(--ink)}
+.mb.all[aria-checked="true"]{background:var(--acc);color:var(--on-acc)}
+.mespanel{margin:22px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.mespanel h3{margin:0 0 8px;font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.05em;text-transform:uppercase}
+.mespanel ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.mespanel li{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline;color:var(--paper-2)}
+.mespanel li b{color:#fff;font-weight:600}
+.mespanel .d{font-family:var(--f-display);font-weight:900;font-size:20px;color:#fff;min-width:44px;font-variant-numeric:tabular-nums}
+.mespanel .none{color:var(--muted);margin:0}
+.mespanel .warn{grid-column:1 / -1;margin:0;color:var(--paper-2);font-size:14px}
+.row.later{opacity:.55}
+.wnote{margin:12px 0 0;color:var(--muted);font-size:14px}
+
+/* ---------- rain and unscheduled ---------- */
+.rain{flex:none;vertical-align:-2px;margin-left:6px;width:15px;height:15px;color:var(--rain)}
+.rain.maybe{opacity:.5}
+.chip .nm .rain{margin-left:5px;width:13px;height:13px;vertical-align:-1px}
+.legend .rain,.wnote .rain{margin:0}
+.sub{margin:34px 0 6px;font-family:var(--f-display);font-weight:800;font-size:24px;letter-spacing:.06em;text-transform:uppercase;color:var(--paper);display:flex;align-items:center;gap:12px}
+.sub::after{content:"";flex:1;height:1px;background:var(--line)}
+.trig{max-width:210px;font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);line-height:1.3}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <span class="kicker">Persona 4 Golden · Inaba · April 200X to March 200X</span>
+      <h1><span>Social Links</span></h1>
+    </div>
+    <div class="meter" id="meter" aria-live="polite"></div>
+  </header>
+
+  <div class="monthbar" role="radiogroup" aria-label="Game month">
+    <div class="lbl" id="monthLbl"></div>
+    <div class="mrow" id="monthRow"></div>
+  </div>
+
+  <div class="tools">
+    <button type="button" class="btn" id="hideBtn" role="switch" aria-checked="false"><span class="sw"></span>Hide completed</button>
+    <button type="button" class="btn" id="hideMaxBtn" role="switch" aria-checked="false"><span class="sw"></span>Hide maxed</button>
+    <button type="button" class="btn" id="spoilBtn" role="switch" aria-checked="false"><span class="sw"></span>Hide spoilers</button>
+    <button type="button" class="btn" id="resetBtn">Reset all</button>
+    <span class="status" id="status" role="status" aria-live="polite"></span>
+  </div>
+  <p class="hint" id="spoilHint" hidden style="margin-top:-8px"></p>
+
+  <nav class="jump" aria-label="Sections">
+    <a href="#semana">Week</a><a href="#rangos">Ranks</a><a href="#stats">Social Stats</a><a href="#pedidos">Requests</a><a href="#fechas">Lockouts &amp; Dates</a><a href="#notas">Notes</a>
+    <button type="button" class="colall" id="colAllBtn">Collapse all</button>
+  </nav>
+
+  <section id="semana" aria-labelledby="hSemana">
+    <h2 id="hSemana">Week</h2>
+    <p class="hint">Tap a link to mark it as completed. Adjust the rank in the list below; reaching 10 marks it automatically. Links with no weekly schedule<span data-sp> (Fool, Margaret, Teddie, Adachi and Judgement)</span> are at the end of Ranks.</p>
+    <div class="week" id="week"></div>
+    <p class="wnote">* only some days · • starts this month (the date is in the panel below and in Milestones &amp; perks) · <span id="rainKey"></span> can be met on rainy days</p>
+    <div class="mespanel" id="mesBox" hidden></div>
+  </section>
+
+  <section id="rangos" aria-labelledby="hRangos">
+    <h2 id="hRangos">Ranks</h2>
+    <p class="legend">Under each rank:
+      <span><i class="tag stat">Stat</i> required social stat</span>
+      <span><i class="tag mem">Request</i> quest or fusion</span>
+      <span><i class="tag fecha">Date</i> lockout, unlock or deadline</span>
+      <span><i class="tag req">Other</i> job, club, condition</span>
+      <span><i class="tag perk">Perk</i> benefit you unlock</span>
+      <span id="rainLegend"></span>
+    </p>
+    <ol class="roster" id="roster"></ol>
+    <h3 class="sub">Links with no weekly schedule</h3>
+    <p class="hint">These advance with the story, on specific dates or from the Velvet Room. Under each one is the date each rank goes up.</p>
+    <ol class="roster" id="story"></ol>
+  </section>
+
+  <section id="stats" aria-labelledby="hStats">
+    <h2 id="hStats">Social Stats</h2>
+    <p class="hint">Which level of each stat you need, and for which link. Set your current level and the requirements you already meet are dimmed. "opt." means it only gives more points on one answer; everything else is a requirement.</p>
+    <div class="skills" id="skillsBox"></div>
+  </section>
+
+  <section id="pedidos" aria-labelledby="hPed">
+    <h2 id="hPed">Fox and Margaret Requests</h2>
+    <p class="hint">Fox advances through the shrine quests and Margaret through specific fusions in the Velvet Room. Neither of them uses up a time slot.</p>
+    <div class="scroll"><table class="tbl" id="memBox"></table></div>
+  </section>
+
+  <section id="fechas" aria-labelledby="hFechas">
+    <h2 id="hFechas">Lockouts &amp; Dates</h2>
+    <p class="hint">When each link starts, which deadlines you have, and when the second transformations open up.</p>
+    <ol class="tl" id="tlBox"></ol>
+  </section>
+
+  <section id="notas" aria-labelledby="hNotas">
+    <h2 id="hNotas">Notes</h2>
+    <ul class="notes">
+      <li><b>Weather.</b> The cloud icon marks links you can meet even when it rains: Fox, Yumi/Ayane, Dojima, Nanako and Margaret. Sayoko and Shu get a dimmed cloud because sources disagree. The rest don't appear when it rains.</li>
+      <li><b>Investigation.</b> While someone is trapped in the TV, your teammates (Yosuke, Yukiko, Chie, Kanji, Rise, Naoto) and Marie aren't available in the afternoon.</li>
+      <li><b>Exams.</b> According to one guide, Kou/Daisuke and Yumi/Ayane don't appear the week before exams.</li>
+      <li><b>Arcana.</b> With a Persona of the same Arcana equipped, each meeting gives more points.</li>
+      <li><b>Jobs.</b> The hospital job (Sayoko) requires Diligence 3 and the tutor job (Shu) requires Understanding 5. The daycare job (Eri) has no stat requirement.</li>
+      <li data-sp><b>Dojima and Nanako.</b> They show up at home in the evening on fixed dates that follow no weekly pattern, and never on the same day. That's why they carry an asterisk every evening. Both close on Oct 31 (one guide says Nov 3 for Dojima); Nanako returns from Jan 23 in Golden.</li>
+      <li data-sp><b>Last day.</b> Except for Adachi (Nov 1), Dojima and Nanako (Oct 31) and Marie (Dec 23), everyone ends between Jan 26 and Feb 5. Those dates come from a single calendar.</li>
+      <li><b>Uncertain data.</b> Days: Yosuke on Fridays, Yukiko some Sundays, Naoto on Sundays, and for Kou/Daisuke and Yumi/Ayane some guides give other days (Mon/Tue/Wed/Sat/Sun and Mon/Tue/Fri). The start date varies by source: Rise (Jul 23 or Jul 11), Eri (Apr 23 or May 2) and Naoki (Jun 8 or Jun 9). Rain: one guide says Yumi/Ayane don't appear and another says Naoto does. Naoki's Understanding 3 requirement and Fox's Expression 5 at R10 come from a minority of guides. The Fool and Judgement perks are listed incompletely.</li>
+      <li><b>Sources.</b> RPG Site, Megami Tensei Wiki, Steam guides and CBR, cross-checked against each other. If something doesn't match your game, it may depend on your stats or on what you've already done.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function(){
+  var DAYS=[['MON','Monday'],['TUE','Tuesday'],['WED','Wednesday'],['THU','Thursday'],['FRI','Friday'],['SAT','Saturday'],['SUN','Sunday']];
+  var L=['M','T','W','T','F','S','S'];
+  var ALL=[0,1,2,3,4,5,6];
+  var MONTHS=['','January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // Level names and minimum points for each stat (1 to 5).
+  var STAT_NAMES={
+    'Knowledge':['Aware','Informed','Expert','Professor','Sage'],
+    'Courage':['Average','Reliable','Brave','Daring','Heroic'],
+    'Diligence':['Callow','Persistent','Strong','Thorough','Rock Solid'],
+    'Expression':['Rough','Eloquent','Persuasive','Touching','Enthralling'],
+    'Understanding':['Basic','Kindly','Generous','Motherly','Saintly']
+  };
+  var STAT_PTS={
+    'Knowledge':[0,30,80,150,240],'Courage':[0,16,40,80,140],'Diligence':[0,16,40,80,130],
+    'Expression':[0,13,33,53,85],'Understanding':[0,16,40,80,140]
+  };
+  var STAT_KEYS=Object.keys(STAT_NAMES);
+
+  // Milestones per link. r = rank reached (or 99 if not applicable). Dates are month/day and shown as "Mon D".
+  function S(r,s,lv,note,opt){return {r:r,k:'stat',s:s,lv:lv,n:note||'',opt:!!opt};}
+  function M(r,name,o){o=o||{};return {r:r,k:'mem',name:name,given:o.given||'',need:o.need||'',area:o.area||''};}
+  function F(r,d,ev,t,sp){return {r:r,k:'fecha',d:d,ev:ev,t:t,sp:sp||''};}
+  function Q(r,t,sp){return {r:r,k:'req',t:t,sp:sp||''};}
+  function P(r,name,fx){return {r:r,k:'perk',name:name,fx:fx||''};}
+  function K(r,d,t){return {r:r,k:'fecha',d:d,ev:'rank',t:t||'Advances with the story'};}
+  function LAST(d){return F(99,d,'lock','Last day available');}
+
+  var COVER='Takes a lethal hit in your place',COVER1='Takes a lethal hit in your place, once per battle',
+      ENDU='Survives a lethal hit with 1 HP, once per battle',ALLCURE='Cures teammates of Rage, Dizzy, Panic and Fear',
+      RAGE='Cures teammates of Rage, Panic and Fear',DOWN='Cures teammates of Down';
+  var FOXCOST=[60,55,50,45,40,35,30,25,20,15];
+  var fox=[F(1,'5/5','start','Starts automatically, at Tatsuhime Shrine'),
+    M(2,'Quest 7 · I Wish for Love',{given:'Shrine ema',need:'R2'}),
+    M(3,"Quest 8 · I Wish I Didn't Crave Snacks",{given:'Shrine ema',need:'R3'}),
+    M(4,'Quest 9 · We Wish Our Dog Would Return',{given:'Shrine ema',need:'R4'}),
+    M(5,'Quest 10 · I Wish I Had Friends',{given:'Shrine ema',need:'R5'}),
+    M(6,'Quest 11 · I Wish My Life Had Meaning Again',{given:'Shrine ema',need:'R6'}),
+    M(7,'Quest 12 · I Wish I Was Better at Speaking',{given:'Shrine ema',need:'R7',area:'Requires high Understanding, Expression and Courage'}),
+    M(8,"Quest 13 · I Wish I Didn't Fear Cats",{given:'Shrine ema',need:'R8'}),
+    M(9,'Quest 14 · I Wish My Wallet Would Return',{given:'Shrine ema',need:'R9'}),
+    M(10,'Quest 15 · The Shichiri Beach Guardian',{given:'Shrine ema',need:'R10'}),
+    S(10,'Expression',5,'Only Megami Tensei Wiki lists this',true),
+    P(10,'Gratitude Ema','Item: lets you fuse the final Hermit Persona'),LAST('2/5')];
+  FOXCOST.forEach(function(c,i){fox.push(P(i+1,'Cheaper SP','Each SP inside the TV costs ¥'+c));});
+
+  // day/night: indexes 0=Monday … 6=Sunday. dayMaybe/nightMaybe: only some days. rain: 1 = can be met in the rain, 2 = uncertain.
+  var C=[
+    {id:'yosuke',name:'Yosuke',arc:'Magician',n:'I',day:[0,3,5,6],dayMaybe:[4],night:[],end:'2/5',where:'Classroom 2F (Mon to Fri) · Junes (Sundays and holidays)',ms:[
+      F(1,'4/16','start','Starts by talking to him'),LAST('2/5'),
+      P(1,'Cover',COVER),P(2,'Trafuri','Learns Trafuri'),P(4,'Dekaja','Learns Dekaja'),P(5,'Ailment Cure',RAGE),
+      P(6,'Auto-Sukukaja','Learns Auto-Sukukaja'),P(7,'Endure',ENDU),P(8,'Diarama','Learns Diarama'),P(10,'Evade Elec','Persona becomes Susano-o and learns Evade Elec'),
+      F(10,'1/12','unlock','Second transformation: Takehaya Susano-o (learns Youthful Wind)')]},
+    {id:'yukiko',name:'Yukiko',arc:'Priestess',n:'II',day:[0,1,2,3],dayMaybe:[6],night:[],end:'2/2',where:'Classroom building 1F · South Shopping District (holidays)',ms:[
+      F(1,'5/17','start','Starts automatically'),LAST('2/2'),
+      S(3,'Courage',4,'To go from R2 to R3',true),S(4,'Courage',3,'To go from R3 to R4',true),
+      P(1,'Cover',COVER1),P(3,'Fan Assault','Follow-up attack after a One More'),P(5,'Down Cure',DOWN),P(7,'Ailment Cure',ALLCURE),
+      P(9,'Endure',ENDU),P(10,'Amaterasu','Persona becomes Amaterasu'),
+      F(10,'1/11','unlock','Second transformation: Sumeo-Okami (learns Burning Petals)')]},
+    {id:'kanji',name:'Kanji',arc:'Emperor',n:'IV',day:[2,3,5,6],night:[],end:'2/5',where:'Practice building 1F · North Shopping District (holidays)',ms:[
+      F(1,'6/9','start','Starts: the girls gossip about Kanji on the 2F of the classroom building'),LAST('2/5'),
+      P(1,'Down and Dizzy Cure','Cures teammates of Down and Dizzy'),P(2,'Dizzy Boost','Learns Dizzy Boost'),P(4,'Masukunda','Learns Masukunda'),
+      P(5,'Ailment Cure',RAGE),P(6,'Power Charge','Learns Power Charge'),P(7,'Endure',ENDU),P(8,'Regenerate 3','Learns Regenerate 3'),
+      P(9,'Cover',COVER1),P(10,'Evade Wind','Learns Evade Wind'),
+      F(10,'1/11','unlock','Second transformation: Takeji Zaiten (Resist Phys, Absorb Elec and The Man\'s Way)')]},
+    {id:'dojima',name:'Dojima',arc:'Hierophant',n:'V',day:[],night:[],nightMaybe:ALL,rain:1,end:'2/2',where:'Home, in the living room (evenings only)',ms:[
+      F(1,'5/6','start','Starts automatically'),
+      S(2,'Expression',2,'To go from R1 to R2'),S(4,'Expression',3,'To go from R3 to R4'),S(5,'Expression',4,'To go from R4 to R5'),
+      S(8,'Courage',5,'For one option from R7 to R8',true),
+      Q(1,'Watering the garden at home gives bonus points'),Q(1,'His schedule follows no weekly pattern and depends on how far you have progressed in the dungeon'),
+      F(10,'10/31','deadline','Max him out before Oct 31 (one guide says Nov 3)'),LAST('2/2'),
+      P(10,'Coffee Mug','Item: lets you fuse Kohryu')]},
+    {id:'rise',name:'Rise',arc:'Lovers',n:'VI',day:[4,5,6],night:[],end:'2/5',where:'Classroom building 1F · South Shopping District (holidays)',ms:[
+      F(1,'7/23','start','Starts automatically (one source says Jul 11)'),LAST('2/5'),
+      S(6,'Understanding',5,'To go from R5 to R6',true),S(7,'Courage',5,'To go from R6 to R7',true),
+      P(1,'All-Out Attack','Chance that Rise joins All-Out Attacks'),P(6,'Analysis','Chance to reveal enemy affinities'),
+      P(7,'Support','May grant support effects between turns'),P(9,'Barrier','Chance to block attacks for the whole party'),
+      P(10,'Kanzeon','Persona becomes Kanzeon and gains a revival skill'),
+      F(10,'1/13','unlock','Second transformation: Kouzeon (learns Complete Analysis)')]},
+    {id:'chie',name:'Chie',arc:'Chariot',n:'VII',day:[0,1,3,5],night:[],end:'2/4',where:'Yasogami rooftop · in front of Daidara (holidays)',ms:[
+      F(1,'4/18','start','Starts automatically'),LAST('2/4'),
+      S(3,'Courage',3,'To go from R2 to R3',true),S(4,'Courage',3,'To go from R3 to R4',true),
+      P(1,'Cover',COVER1),P(3,'Galactic Punt','Follow-up attack after a One More'),P(5,'Down Cure',DOWN),P(7,'Ailment Cure',ALLCURE),
+      P(9,'Endure',ENDU),P(10,'Suzuka Gongen','Persona becomes Suzuka Gongen'),
+      F(10,'1/12','unlock','Second transformation: Haraedo-no-Okami')]},
+    {id:'nanako',name:'Nanako',arc:'Justice',n:'VIII',day:[],night:[],nightMaybe:ALL,rain:1,end:'2/1',where:'Home, evenings, when Dojima is out',ms:[
+      F(1,'5/3','start','Starts automatically'),
+      S(3,'Expression',3,'To go from R2 to R3',true),S(4,'Expression',3,'To go from R3 to R4: without this the event does not even start'),
+      S(5,'Understanding',3,'To go from R4 to R5',true),S(6,'Expression',5,'To go from R5 to R6: without this the event does not even start'),
+      Q(1,'Does not overlap with Dojima: she has to be alone that day'),
+      F(10,'10/31','deadline','Max her out before Oct 31: it is a hard cutoff'),F(10,'1/23','unlock','Becomes available again (Golden only)'),LAST('2/1'),
+      P(10,'Family Picture','Item: lets you fuse Sraosha')]},
+    {id:'fox',name:'Fox',arc:'Hermit',n:'IX',day:ALL,night:[],rain:1,end:'2/5',where:'Tatsuhime Shrine, North Shopping District',ms:fox},
+    {id:'naoto',name:'Naoto',arc:'Fortune',n:'X',day:[0,1,2,5],dayMaybe:[6],night:[],end:'2/4',where:'Classroom building 1F · Samegawa Flood Plain (holidays)',ms:[
+      F(1,'10/21','start','You can start from Oct 21 (the first meeting is usually Oct 22)'),LAST('2/4'),
+      S(1,'Knowledge',5,'To start'),S(1,'Courage',5,'To start'),
+      Q(1,'Very little time is left before the November cutoff of other links: hurry'),
+      P(1,'Down and Dizzy Cure','Cures teammates of Down and Dizzy'),P(2,'Invigorate 1','Learns Invigorate 1'),P(3,'Follow-up','Follow-up attack'),
+      P(4,'Mind Charge','Learns Mind Charge'),P(5,'Ailment Cure',RAGE),P(6,'Invigorate 2','Learns Invigorate 2'),P(7,'Endure',ENDU),
+      P(8,'Heat Riser','Learns Heat Riser'),P(9,'Barrier','Blocks a lethal hit, once per battle'),P(10,'Invigorate 3','Learns Invigorate 3'),
+      F(10,'1/11','unlock','Second transformation: Yamato Sumeragi')]},
+    {id:'kou',name:'Kou/Daisuke',arc:'Strength',n:'XI',day:[1,3,5],dayMaybe:[2],night:[],end:'1/28',where:'Classroom 2F · gym or court',ms:[
+      F(1,'4/19','start','From Apr 19 you can pick a club in the staff room'),Q(1,'Pick basketball (Kou) or soccer (Daisuke)'),
+      Q(4,'Reaching R4 unlocks Ai\'s link (Moon)'),
+      S(6,'Understanding',4,'To go from R5 to R6 (Daisuke\'s path)',true),LAST('1/28'),
+      P(10,'Zaou-Gongen','Letter from their orphanage: lets you fuse Zaou-Gongen')]},
+    {id:'naoki',name:'Naoki',arc:'Hanged Man',n:'XII',day:[0,1,2,3],night:[],end:'2/3',where:'Classroom building 1F · in front of the liquor store (holidays)',ms:[
+      F(1,'6/8','start','From Jun 8, talk to him several days in a row until the link starts'),
+      S(1,'Understanding',3,'To start (per most guides)'),
+      S(4,'Courage',4,'To go from R3 to R4',true),S(4,'Expression',4,'To go from R3 to R4',true),S(9,'Understanding',5,'To go from R8 to R9',true),
+      LAST('2/3'),P(10,'Junes Receipt','Item: lets you fuse Attis')]},
+    {id:'hisano',name:'Hisano',arc:'Death',n:'XIII',day:[6],night:[],end:'2/5',where:'Samegawa Flood Plain (Sundays and holidays)',ms:[
+      F(1,'6/5','start','Unlocks when Sayoko reaches R4 (earliest possible date)'),
+      Q(1,'Only appears if it is not raining. No Death Persona needed'),
+      Q(7,'Before going from R6 to R7, ask the Daidara owner for the Husband\'s Letter'),LAST('2/5'),
+      P(10,'Old Fountain Pen','Item: lets you fuse Mahakala')]},
+    {id:'eri',name:'Eri',arc:'Temperance',n:'XIV',day:[0,4,5],night:[],end:'2/4',where:'Daycare (bus stop, South Shopping District)',ms:[
+      F(1,'4/23','start','Starts with the daycare assistant job (one source says May 2)'),Q(1,'Do the job twice to open the link'),
+      LAST('2/4'),P(10,'Clover Bookmark','Item: lets you fuse Vishnu')]},
+    {id:'sayoko',name:'Sayoko',arc:'Devil',n:'XV',day:[],night:[2,3,4],rain:2,end:'2/3',where:'Hospital (bus stop, South Shopping District)',ms:[
+      F(1,'5/25','start','The hospital cleaning job shows up on the job board'),S(1,'Diligence',3,'To take the hospital job'),
+      Q(1,'Do the job twice to open the link'),F(4,'','unlock','Reaching R4 unlocks Hisano (Death)'),
+      S(5,'Understanding',5,'To go from R4 to R5: the "Comfort her" option gives +3',true),
+      LAST('2/3'),P(10,'Hospital ID','Item: lets you fuse Beelzebub')]},
+    {id:'shu',name:'Shu',arc:'Tower',n:'XVI',day:[],night:[1,3,5],rain:2,end:'2/4',where:'Tutoring job (bus stop, South Shopping District)',ms:[
+      F(1,'5/25','start','The tutoring job shows up on the job board'),S(1,'Understanding',5,'To take the tutoring job'),
+      S(2,'Diligence',5,'To go from R1 to R2: a +2 point option',true),
+      LAST('2/4'),P(10,'Test Results','Item: lets you fuse Shiva')]},
+    {id:'ai',name:'Ai',arc:'Moon',n:'XVIII',day:[2,3,4],night:[],end:'2/2',where:'Classroom building 1F',ms:[
+      F(1,'5/13','start','Unlocks when Kou or Daisuke reaches R4 (earliest possible date)'),
+      S(1,'Courage',3,'To skip class with Ai'),LAST('2/2'),
+      P(10,'Compact','Item: lets you fuse Sandalphon')]},
+    {id:'sun',name:'Yumi/Ayane',arc:'Sun',n:'XIX',day:[0,1,3],dayMaybe:[4],night:[],rain:1,end:'1/26',where:'Practice building · drama club (Yumi) or music club (Ayane)',ms:[
+      F(1,'4/25','start','From Apr 25 you can join the club'),Q(1,'Pick drama (Yumi) or music (Ayane)'),
+      S(4,'Courage',3,'To go from R3 to R4 (Ayane)',true),S(5,'Understanding',3,'To go from R4 to R5 (Ayane)',true),
+      LAST('1/26'),P(10,'Annotated Script','Item: lets you fuse Asura')]},
+    {id:'marie',name:'Marie',arc:'Aeon',n:'',day:[2,5,6],night:[],end:'12/23',where:'Velvet Room · Shopping District',ms:[
+      F(1,'4/18','start','From Apr 18, by visiting the Velvet Room'),Q(5,'Rise must be in your party: from Jul 24'),
+      F(10,'12/23','deadline','Max her out before this date for the extra content (Magatsu Inaba)'),
+      P(10,'Old Bamboo Comb','Item: lets you fuse Kaguya')]},
+    // No weekly schedule
+    {id:'fool',name:'Investigation Team',arc:'Fool',n:'0',story:1,day:[],night:[],trig:'Advances on its own, on fixed dates',where:'Story',ms:[
+      F(1,'4/17','start','Starts automatically'),K(2,'4/30'),K(3,'5/18'),K(4,'6/6'),K(5,'7/10'),K(6,'7/10'),K(7,'7/27'),K(8,'10/6'),K(9,'11/6'),K(10,'12/3'),
+      Q(10,'According to one guide, R10 requires choosing correctly in the Dec 3 scene'),P(10,'Loki','Fool\'s final Persona: lets you fuse Loki')]},
+    {id:'margaret',name:'Margaret',arc:'Empress',n:'III',story:1,day:[],night:[],rain:1,trig:'Advances with fusions, without using a time slot',where:'Velvet Room, any day',ms:[
+      F(1,'5/19','start','From May 19 in the Velvet Room'),S(1,'Knowledge',3,'For her to pay attention to you'),
+      M(2,'Ippon-datara with Sukukaja',{given:'Velvet Room fusion',need:'R2'}),M(3,'Matador with Mahama',{given:'Velvet Room fusion',need:'R3'}),
+      M(4,'Gdon with Rampage',{given:'Velvet Room fusion',need:'R4'}),M(5,'Neko Shogun with Bufula',{given:'Velvet Room fusion',need:'R5'}),
+      M(6,'Black Frost with Auto-Sukukaja',{given:'Velvet Room fusion',need:'R6'}),M(7,'Yatagarasu with Megido',{given:'Velvet Room fusion',need:'R7'}),
+      M(8,'Yatsufusa with Mediarama',{given:'Velvet Room fusion',need:'R8'}),M(9,'Ganesha with Tetrakarn',{given:'Velvet Room fusion',need:'R9'}),
+      M(10,'Trumpeter (Judgement) with Mind Charge',{given:'Velvet Room fusion',need:'R10'}),
+      Q(2,'You can go up several ranks on the same day'),
+      P(10,'Spiral Brooch','Item: lets you fuse Isis'),P(10,'Deep Blue Clothes','New outfit (Golden only)')]},
+    {id:'teddie',name:'Teddie',arc:'Star',n:'XVII',story:1,day:[],night:[],trig:'Advances with the story and dungeons',where:'Story · gas station (scooter rides)',ms:[
+      F(1,'6/24','start','Starts automatically'),K(2,'','On completing the Marukyu Striptease dungeon'),K(3,'7/26'),K(4,'','On completing the Void Quest dungeon'),
+      K(5,'9/8'),K(6,'10/7'),K(7,'10/11'),K(8,'10/30'),K(9,'','On completing Heaven'),K(10,'12/5'),
+      Q(1,'Scooter rides (bonus points): Sep 3, Sep 25, Oct 2, Oct 13, Nov 7, Nov 10, Nov 17, Nov 24, Jan 23, Jan 28 and Feb 4'),
+      P(2,'Auto-Rakukaja','Learns Auto-Rakukaja'),P(4,'Recarm','Learns Recarm'),P(6,'Marakunda','Learns Marakunda'),P(8,'Samarecarm','Learns Samarecarm'),
+      P(10,'Evade Elec','Persona becomes Kamui and learns Evade Elec'),
+      F(10,'1/11','unlock','Second transformation: Kamui-Moshiri (from Jan 11 he appears at Junes at midday)')]},
+    {id:'adachi',name:'Adachi',arc:'Jester',n:'',story:1,day:[],night:[],trig:'Only on specific dates (Mon, Wed or Fri)',where:'Junes (daytime) · gas station (evening)',ms:[
+      F(1,'5/13','start','From May 13 at Junes (opens by talking to Dojima at home from May 12)'),
+      Q(1,'Dates: May 13, 20, 23, 25, 27, 30 · Jun 5, 10, 11, 15, 26, 28 · Jul 2, 4, 5, 12, 14, 24, 25 · Aug 23, 25 · Sep 1, 19, 20, 21, 23, 24, 27, 30 · Oct 6, 12, 21, 24, 26 · Nov 1'),
+      Q(1,'R1, R2 and R6: daytime, at the Junes entrance. R3 to R5: evening, at the gas station'),
+      F(6,'11/1','deadline','Reach R6 before Nov 1 or the link is cut off'),
+      K(7,'','On completing Heaven'),K(8,'12/3'),Q(8,'On Dec 5 you choose: protect him (Jester path) or tell your friends (Hunger path)'),
+      K(9,'','On completing Magatsu Inaba'),K(10,'3/20'),
+      P(10,"Adachi's Letter",'Item: lets you fuse Magatsu-Izanagi')]},
+    {id:'igor',name:'Seekers of Truth',arc:'Judgement',n:'XX',story:1,day:[],night:[],trig:'Ranks up quickly, only on the Normal or True Ending route',where:'Story, from Dec 3 onward',ms:[
+      F(1,'12/3','start','Starts automatically, and only on the Normal or True Ending route'),
+      K(2,'12/4'),K(3,'12/4'),K(4,'12/5'),K(5,'12/5'),K(6,'12/6'),K(7,'12/7'),K(8,'12/7'),K(9,'','On completing Magatsu Inaba'),K(10,'','On completing Magatsu Inaba'),
+      P(10,'Lucifer','Lets you fuse Lucifer')]}
+  ];
+  var ids={};C.forEach(function(c){ids[c.id]=c;c.ms.forEach(function(m,i){m._i=i;});c.ms.sort(function(a,b){return a.r-b.r||a._i-b._i;});});
+  C.forEach(function(c){var nd='';for(var q=c.ms.length-1;q>=0;q--){var z=c.ms[q];if(z.k==='fecha'&&z.ev==='rank'){if(z.d)nd=z.d;else if(nd)z.spd=nd;}}c.gates=[];c.ms.forEach(function(m){if(m.k==='fecha'&&m.ev==='rank'&&m.d)c.gates.push({r:m.r,o:ord(m.d)});});});
+
+  var SUN='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="currentColor"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M12.6 3.4l-1.4 1.4M4.8 11.2l-1.4 1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>';
+  var MOON='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M13 9.6A5.6 5.6 0 0 1 6.4 3a5.6 5.6 0 1 0 6.6 6.6z" fill="currentColor"/></svg>';
+  var CHECK='<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"/></svg>';
+  var RAINPATH='<path d="M4.6 9.4A3 3 0 0 1 5 3.5a4 4 0 0 1 7.6.9A2.6 2.6 0 0 1 12 9.4z" fill="currentColor"/><path d="M5.2 11.3l-1 2.6M8.6 11.3l-1 2.6M12 11.3l-1 2.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>';
+  function rainSvg(lv,label){
+    var t=lv===2?'Rainy days: sources disagree':'Can be met on rainy days';
+    return '<svg class="rain'+(lv===2?' maybe':'')+'" viewBox="0 0 16 16" role="img" aria-label="'+(label||t)+'"><title>'+t+'</title>'+RAINPATH+'</svg>';
+  }
+  var RAINDECOR='<svg class="rain" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">'+RAINPATH+'</svg>';
+
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function parseD(d){var p=d.split('/');return {m:+p[0],d:+p[1]};}
+  function fmtD(d){var x=parseD(d);return MABBR[x.m]+' '+x.d;}
+  function ord(d){var x=parseD(d);return (x.m<4?x.m+12:x.m)*100+x.d;}
+  function statLabel(m){return m.s+' '+m.lv;}
+  var MABBR=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var MORDER=[4,5,6,7,8,9,10,11,12,1,2,3];
+  function yearOf(mo){return '200X';}
+  function startD(c){for(var i=0;i<c.ms.length;i++){if(c.ms[i].ev==='start')return c.ms[i].d;}return '4/1';}
+  // State of a link in the chosen month: all, later (not yet), over (already ended), starts (starts this month), active.
+  function monthState(c){
+    var mo=state.month;
+    if(!mo)return {s:'all'};
+    var d=startD(c),so=ord(d),a=ord(mo+'/1'),b=ord(mo+'/31');
+    if(so>b)return {s:'later',d:d};
+    if(c.end&&ord(c.end)<a)return {s:'over',d:c.end};
+    if(so>=a)return {s:'starts',d:d};
+    return {s:'active',d:d};
+  }
+  // Hide spoilers: only applies when a month is chosen.
+  function SP(){return !!(state.spoil&&state.month);}
+  function hiddenC(c){return SP()&&monthState(c).s==='later';}
+  function dOf(m){
+    if(m.sp)return m.sp;
+    if(m.spd)return m.spd;
+    if(m.k==='mem'){var x=/(\d{1,2})\/(\d{1,2})/.exec(m.given||'');return x?x[2]+'/'+x[1]:'';}
+    return '';
+  }
+  function spHidden(m,c){
+    if(!SP())return false;
+    var b=ord(state.month+'/31'),d=dOf(m);
+    if(d&&ord(d)>b)return true;
+    if(m.k==='perk'&&m.r>10&&ord('1/13')>b)return true;
+    if(m.k==='fecha'&&(m.ev==='unlock'||m.ev==='rank'||m.ev==='lock')&&m.d&&ord(m.d)>b)return true;
+    if(m.ev==='start')return false;
+    for(var i=0;i<c.gates.length;i++){if(c.gates[i].r<=m.r&&c.gates[i].o>b)return true;}
+    return false;
+  }
+  function vis(c){return c.ms.filter(function(m){return !spHidden(m,c);});}
+  function avail(c,i,slot){
+    var main=(slot==='d'?c.day:c.night)||[],mb=(slot==='d'?c.dayMaybe:c.nightMaybe)||[];
+    var r=main.indexOf(i)>=0?'main':(mb.indexOf(i)>=0?'maybe':null);
+    if(!state.month||!r)return r;
+    var s=monthState(c).s;
+    return (s==='later'||s==='over')?null:r;
+  }
+
+  var KEY='p4g-sociallinks-v1';
+  var state={done:{},rank:{},stats:{},month:4,hide:false,hideMax:false,spoil:true,col:{}};
+  var openRows={};
+
+  function clean(o){
+    var out={done:{},rank:{},stats:{},month:0};
+    if(o&&typeof o==='object'){
+      var d=o.done||{},r=o.rank||{},s=o.stats||{};
+      C.forEach(function(c){
+        if(d[c.id]===true)out.done[c.id]=true;
+        var n=parseInt(r[c.id],10);
+        if(n>=1&&n<=10)out.rank[c.id]=n;
+      });
+      STAT_KEYS.forEach(function(k){var n=parseInt(s[k],10);if(n>=1&&n<=5)out.stats[k]=n;});
+      var mo=parseInt(o.month,10);if(mo>=1&&mo<=12)out.month=mo;
+    }
+    return out;
+  }
+  function loadLocal(){
+    try{
+      var raw=localStorage.getItem(KEY);
+      if(raw){var o=JSON.parse(raw);var c=clean(o);state.done=c.done;state.rank=c.rank;state.stats=c.stats;state.month=c.month;state.hide=!!o.hide;state.hideMax=!!o.hideMax;state.spoil=!!o.spoil;state.col=(o.col&&typeof o.col==='object')?o.col:{};}
+    }catch(e){}
+  }
+  function saveLocal(){
+    try{localStorage.setItem(KEY,JSON.stringify({done:state.done,rank:state.rank,stats:state.stats,month:state.month,hide:state.hide,hideMax:state.hideMax,spoil:state.spoil,col:state.col}));}catch(e){}
+  }
+
+  var $week=document.getElementById('week'),$roster=document.getElementById('roster'),$story=document.getElementById('story'),$meter=document.getElementById('meter'),
+      $hide=document.getElementById('hideBtn'),$hideMax=document.getElementById('hideMaxBtn'),$spoil=document.getElementById('spoilBtn'),$spHint=document.getElementById('spoilHint'),$reset=document.getElementById('resetBtn'),$status=document.getElementById('status'),
+      $skills=document.getElementById('skillsBox'),$mrow=document.getElementById('monthRow'),$mlbl=document.getElementById('monthLbl'),$mes=document.getElementById('mesBox'),$mem=document.getElementById('memBox'),$tl=document.getElementById('tlBox');
+  document.getElementById('rainKey').innerHTML=RAINDECOR;
+  document.getElementById('rainLegend').innerHTML=RAINDECOR+'can be met on rainy days';
+
+  /* ---------- week ---------- */
+  function chip(c,i,slot,maybe){
+    var done=!!state.done[c.id],r=state.rank[c.id]||0;
+    var st=monthState(c),starts=st.s==='starts';
+    var label=c.name+', '+c.arc+', '+(r?'rank '+r:'not started')+(done?', completed':'')+(maybe?', some days only':'')+(starts?', starts '+fmtD(st.d):'')+(c.rain?', can be met on rainy days':'');
+    return '<button type="button" class="chip'+(done?' is-done':'')+'" data-act="toggle" data-id="'+c.id+'" data-k="w'+i+slot+c.id+'" aria-pressed="'+done+'" aria-label="'+label+'" title="'+c.name+' · '+c.arc+(starts?' · starts '+fmtD(st.d):'')+(c.rain?' · can be met on rainy days'+(c.rain===2?' (uncertain)':''):'')+'">'+
+      '<span class="cn">'+c.n+'</span><span class="nm'+(c.name.length>9?' long':'')+'">'+c.name+(c.rain?'<svg class="rain'+(c.rain===2?' maybe':'')+'" viewBox="0 0 16 16" aria-hidden="true">'+RAINPATH+'</svg>':'')+(maybe?'<i>*</i>':'')+(starts?'<i>•</i>':'')+'</span>'+
+      '<span class="rp">'+(done?CHECK:(r?'R'+r:'—'))+'</span></button>';
+  }
+  function slotHtml(i,slot){
+    var list=[];
+    C.forEach(function(c){
+      var a=avail(c,i,slot);
+      if(a)list.push({c:c,maybe:a==='maybe'});
+    });
+    if(state.hide)list=list.filter(function(x){return !state.done[x.c.id];});
+    list=list.map(function(x,idx){return {c:x.c,maybe:x.maybe,idx:idx};}).sort(function(a,b){
+      var da=state.done[a.c.id]?1:0,db=state.done[b.c.id]?1:0;return da-db||a.idx-b.idx;});
+    var pending=list.filter(function(x){return !state.done[x.c.id];}).length;
+    var body=list.length?'<div class="chips">'+list.map(function(x){return chip(x.c,i,slot,x.maybe);}).join('')+'</div>':'<p class="empty">'+(state.hide?'All completed':'Nobody this month')+'</p>';
+    return '<div class="slot '+slot+'"><div class="sh">'+(slot==='d'?SUN+'Day':MOON+'Night')+'<em>'+pending+' left</em></div>'+body+'</div>';
+  }
+  function renderWeek(){
+    $week.innerHTML=DAYS.map(function(d,i){
+      return '<article class="day" aria-label="'+d[1]+'"><div class="dh"><b>'+d[0]+'</b><span>'+d[1]+'</span></div>'+slotHtml(i,'d')+slotHtml(i,'n')+'</article>';
+    }).join('');
+  }
+
+  /* ---------- ranks ---------- */
+  function strip(c){
+    return '<div class="strip" role="img" aria-label="Weekly availability of '+c.name+'">'+ALL.map(function(i){
+      function cell(main,maybe){return (main||[]).indexOf(i)>=0?'on':((maybe||[]).indexOf(i)>=0?'maybe':'');}
+      var dcl=cell(c.day,c.dayMaybe),ncl=cell(c.night,c.nightMaybe);
+      return '<div class="md" title="'+DAYS[i][1]+(dcl?' · day':'')+(ncl?' · night':'')+'">'+L[i]+'<span class="sq '+dcl+'"></span><span class="sq '+ncl+'"></span></div>';
+    }).join('')+'</div>';
+  }
+  function marksHtml(c){
+    var cells=[],i;
+    for(i=0;i<10;i++)cells.push({stat:0,mem:0,fecha:0,req:0,perk:0});
+    vis(c).forEach(function(m){
+      if(m.r>10||m.ev==='start')return;
+      cells[Math.max(1,Math.floor(m.r))-1][m.k]=1;
+    });
+    return '<div class="marks" aria-hidden="true">'+cells.map(function(x){
+      var t='';['stat','mem','fecha','req','perk'].forEach(function(k){if(x[k])t+='<i class="m-'+k+'"></i>';});
+      return '<span class="mk">'+t+'</span>';
+    }).join('')+'</div>';
+  }
+  function met(m){return m.k==='stat'&&(state.stats[m.s]||0)>=m.lv;}
+  function brief(m){
+    if(m.k==='stat')return statLabel(m)+' ('+STAT_NAMES[m.s][m.lv-1]+')'+(m.n?' · '+m.n:'');
+    if(m.k==='mem')return 'Request "'+m.name+'"';
+    return (m.d?fmtD(m.d)+' · ':'')+m.t;
+  }
+  function nextHtml(c,rank,done){
+    if(done)return '';
+    var ms=vis(c),nx=null,pk=null,i,m;
+    for(i=0;i<ms.length;i++){m=ms[i];if(m.k!=='perk'&&m.r<=10&&m.r>rank&&!(m.k==='stat'&&(m.opt||met(m)))){nx=m;break;}}
+    for(i=0;i<ms.length;i++){m=ms[i];if(m.k==='perk'&&m.r<=10&&m.r>rank){pk=m;break;}}
+    return (nx?'<div class="next"><b>Next</b>R'+nx.r+' · '+esc(brief(nx))+'</div>':'')+
+      (pk?'<div class="next"><b>Perk</b>R'+pk.r+' · '+esc(pk.name)+(pk.fx?' <em>— '+esc(pk.fx)+'</em>':'')+'</div>':'');
+  }
+  var EV={start:'Starts',unlock:'Unlocks',deadline:'Deadline',lock:'Lockout',rank:'Rank up'};
+  function msLine(m,c){
+    var r='<span class="r">'+(m.r>=99?'—':'R'+m.r)+'</span>',t,tx;
+    if(m.k==='perk'){
+      t='<span class="tag perk">Perk</span>';
+      tx='<b>'+esc(m.name)+'</b>'+(m.fx?' <em>— '+esc(m.fx)+'</em>':'')+((state.rank[c.id]||0)>=m.r?'<span class="ok">✓ unlocked</span>':'');
+    }else if(m.k==='stat'){
+      t='<span class="tag stat">Stat</span>';
+      tx='<b>'+m.s+' '+m.lv+'</b> · '+STAT_NAMES[m.s][m.lv-1]+(m.opt?' <em>(opt.)</em>':'')+(m.n?' <em>— '+esc(m.n)+'</em>':'')+(met(m)?'<span class="ok">✓ already met</span>':'');
+    }else if(m.k==='mem'){
+      t='<span class="tag mem">Request</span>';
+      tx='<b>'+esc(m.name)+'</b> <em>— '+esc(m.given)+(m.need?' · leads to '+m.need:'')+(m.area?' · '+esc(m.area):'')+'</em>';
+    }else if(m.k==='fecha'){
+      t='<span class="tag ev-'+m.ev+'">'+EV[m.ev]+'</span>';
+      tx=(m.d?'<b>'+fmtD(m.d)+'</b> · ':'')+esc(m.t);
+    }else{
+      t='<span class="tag req">Other</span>';tx=esc(m.t);
+    }
+    return '<li>'+r+t+'<span class="tx">'+tx+'</span></li>';
+  }
+  function monthNote(c){
+    var s=monthState(c);
+    if(s.s==='later')return '<div class="next lt"><b>Not yet</b>Starts '+fmtD(s.d)+'</div>';
+    if(s.s==='over')return '<div class="next lt"><b>Ended</b>Last day: '+fmtD(s.d)+'</div>';
+    if(s.s==='starts')return '<div class="next lt"><b>This month</b>Starts '+fmtD(s.d)+'</div>';
+    return '';
+  }
+  function rowHtml(c){
+    var done=!!state.done[c.id],r=state.rank[c.id]||0,pips='';
+    for(var n=1;n<=10;n++){
+      pips+='<button type="button" class="pip'+(n<=r?' on':'')+'" role="radio" aria-checked="'+(n===r)+'" aria-label="Rank '+n+'" data-act="rank" data-id="'+c.id+'" data-r="'+n+'" data-k="r'+c.id+n+'">'+n+'</button>';
+    }
+    var ms=monthState(c).s;
+    return '<li class="row'+(done?' is-done':'')+((ms==='later'||ms==='over')?' later':'')+'">'+
+      '<button type="button" class="ck" data-act="toggle" data-id="'+c.id+'" data-k="c'+c.id+'" aria-pressed="'+done+'" aria-label="Completed: '+c.name+'">'+CHECK+'</button>'+
+      '<div class="who"><b>'+c.name+(c.rain?rainSvg(c.rain):'')+'</b><span>'+(c.n?c.n+' · ':'')+c.arc+'</span><small>'+esc(c.where)+'</small>'+monthNote(c)+nextHtml(c,r,done)+'</div>'+
+      (c.story?'<div class="trig">'+esc(c.trig)+'</div>':strip(c))+
+      '<div class="rank"><div class="pw"><div class="pips" role="radiogroup" aria-label="Rank of '+c.name+'">'+pips+'</div>'+marksHtml(c)+'</div><div class="read">'+r+'<small>/10</small></div></div>'+
+      '<details class="ms" data-id="'+c.id+'"'+(openRows[c.id]?' open':'')+'><summary data-k="s'+c.id+'">Milestones &amp; perks · '+vis(c).length+'</summary><ul>'+vis(c).map(function(m){return msLine(m,c);}).join('')+'</ul></details>'+
+      '</li>';
+  }
+  function renderRoster(){
+    function pick(list){
+      var out=[],nl=0,nm=0;
+      list.forEach(function(c){
+        if(hiddenC(c))nl++;
+        else if(state.hideMax&&state.rank[c.id]===10)nm++;
+        else out.push(c);
+      });
+      var t=[];
+      if(nm)t.push(nm+' maxed '+(nm===1?'link':'links')+' hidden');
+      if(nl)t.push(nl+(nl===1?' link that appears later':' links that appear later')+' (spoilers)');
+      return out.map(rowHtml).join('')+(t.length?'<li class="row story-only"><span></span><div class="who"><small>'+t.join(' · ')+'</small></div></li>':'');
+    }
+    $roster.innerHTML=pick(C.filter(function(c){return !c.story;}));
+    $story.innerHTML=pick(C.filter(function(c){return c.story;}));
+  }
+
+  /* ---------- stats ---------- */
+  function renderSkills(){
+    $skills.innerHTML=STAT_KEYS.map(function(s){
+      var mine=state.stats[s]||0,pips='';
+      for(var n=1;n<=5;n++){
+        pips+='<button type="button" class="pip'+(n<=mine?' on':'')+'" role="radio" aria-checked="'+(n===mine)+'" aria-label="Level '+n+'" data-act="stat" data-s="'+s+'" data-lv="'+n+'" data-k="st'+s+n+'">'+n+'</button>';
+      }
+      var rows='';
+      for(var lv=1;lv<=5;lv++){
+        var ents=[];
+        C.forEach(function(c){if(hiddenC(c))return;c.ms.forEach(function(m){if(m.k==='stat'&&m.s===s&&m.lv===lv&&!spHidden(m,c))ents.push({c:c,m:m});});});
+        var ok=mine>=lv;
+        rows+='<div class="lv'+(ok?' met':'')+'"><div class="n">'+lv+'<small>'+STAT_NAMES[s][lv-1]+' · from '+STAT_PTS[s][lv-1]+' pts</small></div><div class="who2">'+
+          (ents.length?ents.map(function(e){
+            var dn=state.done[e.c.id];
+            return '<span class="ent'+(dn||ok?' dim':'')+(dn?' strike':'')+'">'+e.c.name+' <small>R'+e.m.r+'</small>'+(e.m.opt?' <i>opt.</i>':'')+(e.m.n?' <i>'+esc(e.m.n)+'</i>':'')+'</span>';
+          }).join(''):(SP()?'<span class="nobody">None yet</span>':'<span class="nobody">No link requires it</span>'))+(ok?'<span class="ck2">✓ met</span>':'')+'</div></div>';
+      }
+      return '<div class="card"><h3>'+s+'</h3><div class="mine">Your level<div class="pips" role="radiogroup" aria-label="Your '+s+' level">'+pips+'</div></div>'+rows+'</div>';
+    }).join('');
+  }
+
+  /* ---------- requests ---------- */
+  function renderMem(){
+    var rows='';
+    C.forEach(function(c){
+      if(hiddenC(c))return;
+      c.ms.forEach(function(m){
+        if(m.k!=='mem'||spHidden(m,c))return;
+        var dn=!!state.done[c.id];
+        var s=monthState(c).s;
+        rows+='<tr'+(dn?' class="dim"':((s==='later'||s==='over')?' class="later"':''))+'><td class="cf">'+c.name+'<small>'+(c.n?c.n+' · ':'')+c.arc+'</small></td>'+
+          '<td class="mn'+(dn?' strike':'')+'">'+esc(m.name)+'</td><td>'+esc(m.given)+'</td><td class="rr">'+m.need+'</td><td>'+esc(m.area||'—')+'</td></tr>';
+      });
+    });
+    $mem.innerHTML='<thead><tr><th>Link</th><th>Request</th><th>Source</th><th>Leads to</th><th>Note</th></tr></thead><tbody>'+rows+'</tbody>';
+  }
+
+  /* ---------- dates ---------- */
+  function timelineItems(){
+    var items={};
+    C.forEach(function(c){if(hiddenC(c))return;c.ms.forEach(function(m){
+      if(m.k==='fecha'&&m.d&&m.ev!=='rank'&&!spHidden(m,c)){
+        var key=m.d+'|'+m.ev+'|'+m.t;
+        (items[key]=items[key]||{d:m.d,ev:m.ev,t:m.t,who:[]}).who.push(c);
+      }
+    });});
+    return Object.keys(items).map(function(k){return items[k];}).sort(function(a,b){return ord(a.d)-ord(b.d);});
+  }
+  function namesHtml(who){
+    return who.map(function(c){return '<span class="'+(state.done[c.id]?'dim strike':'')+'">'+c.name+'</span>';}).join(', ');
+  }
+  function renderTimeline(){
+    var list=timelineItems();
+    var html='',cur=0;
+    list.forEach(function(it){
+      var mo=parseD(it.d).m;
+      if(mo!==cur){
+        if(cur)html+='</ol></li>';
+        cur=mo;html+='<li><h3'+(mo===state.month?' class="cur"':'')+'>'+MONTHS[mo]+' '+yearOf(mo)+'</h3><ol class="tl">';
+      }
+      var names=namesHtml(it.who);
+      var allDone=it.who.every(function(c){return state.done[c.id];});
+      html+='<li class="ti'+(allDone?' dim':'')+'"><span class="dt">'+fmtD(it.d)+'</span><span><span class="tag ev-'+it.ev+'">'+EV[it.ev]+'</span></span><span class="tx"><b>'+names+'</b> · '+esc(it.t)+'</span></li>';
+    });
+    if(cur)html+='</ol></li>';
+    $tl.innerHTML=html;
+  }
+
+  /* ---------- game month ---------- */
+  function renderMonthBar(){
+    var h='';
+    MORDER.forEach(function(m){
+      h+='<button type="button" class="mb" role="radio" aria-checked="'+(state.month===m)+'" data-act="month" data-m="'+m+'" data-k="m'+m+'">'+MABBR[m]+'</button>';
+    });
+    h+='<button type="button" class="mb all" role="radio" aria-checked="'+(!state.month)+'" data-act="month" data-m="0" data-k="m0">All</button>';
+    $mrow.innerHTML=h;
+    $mlbl.innerHTML='Game month'+(state.month?'<b>'+MONTHS[state.month]+' '+yearOf(state.month)+'</b>':'<b>Whole year</b>');
+  }
+  function evLine(x){
+    return '<li><span class="d">'+fmtD(x.d)+'</span><span class="tag ev-'+x.ev+'">'+EV[x.ev]+'</span><span><b>'+namesHtml(x.who)+'</b> · '+esc(x.t)+'</span></li>';
+  }
+  function renderMes(){
+    var mo=state.month;
+    if(!mo){$mes.hidden=true;$mes.innerHTML='';return;}
+    var a=ord(mo+'/1'),b=ord(mo+'/31'),items=timelineItems();
+    var here=items.filter(function(x){var o=ord(x.d);return o>=a&&o<=b&&x.ev!=='lock';});
+    var soon=items.filter(function(x){var o=ord(x.d);return x.ev==='deadline'&&o>b&&o<=b+250;});
+    var later=C.filter(function(c){return monthState(c).s==='later';}).sort(function(x,y){return ord(startD(x))-ord(startD(y));});
+    var over=C.filter(function(c){return monthState(c).s==='over';}).sort(function(x,y){return ord(x.end)-ord(y.end);});
+    var html='<div><h3>'+MONTHS[mo]+' '+yearOf(mo)+' dates</h3>'+(here.length?'<ul>'+here.map(evLine).join('')+'</ul>':'<p class="none">No notable dates this month.</p>')+'</div>';
+    html+='<div><h3>Not available yet</h3>'+(SP()?'<p class="none">Hidden: Hide spoilers is on.</p>':later.length?'<ul>'+later.map(function(c){
+      return '<li class="'+(state.done[c.id]?'dim':'')+'"><span class="d">'+fmtD(startD(c))+'</span><span><b>'+c.name+'</b> · starts</span></li>';}).join('')+'</ul>':'<p class="none">All links are already available.</p>')+'</div>';
+    html+='<div><h3>Upcoming deadlines</h3>'+(soon.length?'<ul>'+soon.map(evLine).join('')+'</ul>':'<p class="none">No deadlines in the coming months.</p>')+'</div>';
+    if(over.length)html+='<div><h3>Already ended</h3><ul>'+over.map(function(c){
+      return '<li class="'+(state.done[c.id]?'dim':'')+'"><span class="d">'+fmtD(c.end)+'</span><span><b>'+c.name+'</b> · last day</span></li>';}).join('')+'</ul></div>';
+    if(mo===2||mo===3)html+='<p class="warn">The link calendar is over from Feb 6. In March only Adachi\'s R10 (Mar 20) remains, according to Megami Tensei Wiki.</p>';
+    $mes.innerHTML=html;$mes.hidden=false;
+  }
+
+  function renderMeter(){
+    var d=C.filter(function(c){return state.done[c.id];}).length;
+    var sum=C.reduce(function(a,c){return a+(state.rank[c.id]||0);},0);
+    var max=C.length*10;
+    $meter.innerHTML=
+      '<div class="kpi"><div class="lbl">Completed</div><div class="num">'+d+'<small>/'+C.length+'</small></div><div class="bar"><i style="width:'+(d/C.length*100)+'%"></i></div></div>'+
+      '<div class="kpi"><div class="lbl">Total ranks</div><div class="num">'+sum+'<small>/'+max+'</small></div><div class="bar"><i style="width:'+(sum/max*100)+'%"></i></div></div>';
+  }
+  function render(){
+    var a=document.activeElement,k=a&&a.getAttribute?a.getAttribute('data-k'):null;
+    renderMonthBar();renderMes();renderWeek();renderRoster();renderSkills();renderMem();renderTimeline();renderMeter();
+    $hide.setAttribute('aria-checked',String(state.hide));
+    applyCol();
+    $hideMax.setAttribute('aria-checked',String(state.hideMax));
+    $spoil.setAttribute('aria-checked',String(state.spoil));
+    $spHint.hidden=!state.spoil;
+    $spHint.textContent=state.month?'Hiding everything after '+MONTHS[state.month]+' '+yearOf(state.month)+': links that have not started yet, later dates and ranks, and story notes.':'Pick a game month above to hide what comes later.';
+    Array.prototype.forEach.call(document.querySelectorAll('[data-sp]'),function(n){n.style.display=SP()?'none':'';});
+    if(k){var el=document.querySelector('[data-k="'+k+'"]');if(el&&el!==document.activeElement)el.focus({preventScroll:true});}
+  }
+
+  /* ---------- persistence ---------- */
+  var STATUS={local:'Saved in this browser'};
+  function setStatus(s){$status.textContent=STATUS[s]||'';}
+  function changed(){
+    saveLocal();
+    setStatus('local');
+  }
+
+  /* ---------- collapsible sections ---------- */
+  var SECS=[];
+  function initSections(){
+    Array.prototype.forEach.call(document.querySelectorAll('section[id]'),function(sec){
+      if(sec.id==='semana')return;
+      var h=sec.querySelector('h2');if(!h)return;
+      var body=document.createElement('div');body.className='secb';body.id='b-'+sec.id;
+      while(h.nextSibling)body.appendChild(h.nextSibling);
+      sec.appendChild(body);
+      var btn=document.createElement('button');btn.type='button';btn.className='sech';
+      btn.setAttribute('data-act','sec');btn.setAttribute('data-sec',sec.id);btn.setAttribute('aria-controls',body.id);
+      btn.innerHTML='<span>'+h.innerHTML+'</span><i class="chev" aria-hidden="true"></i>';
+      h.textContent='';h.appendChild(btn);
+      SECS.push(sec.id);
+    });
+  }
+  function applyCol(){
+    var anyOpen=false;
+    SECS.forEach(function(id){
+      var c=!!state.col[id],b=document.getElementById('b-'+id),t=document.querySelector('[data-sec="'+id+'"]');
+      if(b)b.hidden=c;
+      if(t)t.setAttribute('aria-expanded',String(!c));
+      if(!c)anyOpen=true;
+    });
+    var ca=document.getElementById('colAllBtn');
+    if(ca)ca.textContent=anyOpen?'Collapse all':'Expand all';
+  }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest?e.target.closest('.jump a'):null;if(!a)return;
+    var id=(a.getAttribute('href')||'').slice(1);
+    if(state.col[id]){delete state.col[id];saveLocal();applyCol();}
+  });
+
+  /* ---------- events ---------- */
+  var resetArmed=false,resetTimer=null;
+  function disarm(){resetArmed=false;clearTimeout(resetTimer);$reset.classList.remove('warn');$reset.textContent='Reset all';}
+  document.addEventListener('toggle',function(e){
+    var t=e.target;
+    if(t&&t.classList&&t.classList.contains('ms')){openRows[t.getAttribute('data-id')]=t.open;}
+  },true);
+  document.addEventListener('click',function(e){
+    var t=e.target.closest?e.target.closest('button'):null;if(!t)return;
+    var act=t.getAttribute('data-act'),id=t.getAttribute('data-id');
+    if(act==='toggle'&&ids[id]){
+      if(state.done[id])delete state.done[id];else state.done[id]=true;
+      changed();render();
+    }else if(act==='rank'&&ids[id]){
+      var n=parseInt(t.getAttribute('data-r'),10);
+      if(state.rank[id]===n)delete state.rank[id];else state.rank[id]=n;
+      if(n===10&&state.rank[id]===10)state.done[id]=true;
+      changed();render();
+    }else if(act==='stat'){
+      var s=t.getAttribute('data-s'),lv=parseInt(t.getAttribute('data-lv'),10);
+      if(STAT_NAMES[s]){if(state.stats[s]===lv)delete state.stats[s];else state.stats[s]=lv;changed();render();}
+    }else if(act==='month'){
+      var mm=parseInt(t.getAttribute('data-m'),10);
+      state.month=(mm>=1&&mm<=12&&state.month!==mm)?mm:0;
+      changed();render();
+    }else if(t===$hide){
+      state.hide=!state.hide;saveLocal();render();
+    }else if(act==='sec'){
+      var sid=t.getAttribute('data-sec');
+      if(state.col[sid])delete state.col[sid];else state.col[sid]=true;
+      saveLocal();applyCol();
+    }else if(t.id==='colAllBtn'){
+      var anyOpen=SECS.some(function(x){return !state.col[x];});
+      SECS.forEach(function(x){if(anyOpen)state.col[x]=true;else delete state.col[x];});
+      saveLocal();applyCol();
+    }else if(t===$hideMax){
+      state.hideMax=!state.hideMax;saveLocal();render();
+    }else if(t===$spoil){
+      state.spoil=!state.spoil;saveLocal();render();
+    }else if(t===$reset){
+      if(!resetArmed){resetArmed=true;$reset.classList.add('warn');$reset.textContent='Are you sure? Tap again';resetTimer=setTimeout(disarm,4000);}
+      else{disarm();state.done={};state.rank={};state.stats={};state.month=0;changed();render();}
+    }
+    if(t!==$reset&&resetArmed)disarm();
+  });
+
+  initSections();loadLocal();render();setStatus('local');
+})();
+</script>
+</body>
+</html>

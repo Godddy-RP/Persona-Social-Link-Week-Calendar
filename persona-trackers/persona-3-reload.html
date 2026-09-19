@@ -1,0 +1,914 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Persona 3 Reload Social Links Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Big+Shoulders+Display:wght@800;900&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --ink:#050a18;
+  --panel:#0b1428;
+  --panel-2:#12203d;
+  --line:#23375f;
+  --acc:#2ec4ff;
+  --acc-hi:#8adfff;
+  --on-acc:#04101f;
+  --paper:#eaf4ff;
+  --paper-2:#c4d6ee;
+  --muted:#8fa5c4;
+  --off:#17264a;
+  --rain:#7fd0e6;
+  --f-display:'Big Shoulders Display','Impact','Arial Narrow',sans-serif;
+  --f-ui:'Barlow Condensed','Arial Narrow',sans-serif;
+  --f-body:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--ink);color:var(--paper);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.app{max-width:1360px;margin:0 auto;padding-inline:16px;padding-block:24px 56px}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+button:focus-visible{outline:3px solid var(--acc-hi);outline-offset:2px}
+h1,h2{margin:0;font-family:var(--f-display);font-weight:900;text-transform:uppercase;text-wrap:balance}
+
+/* ---------- header ---------- */
+.top{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:flex-end;justify-content:space-between;margin-bottom:28px}
+.kicker{display:block;font-family:var(--f-ui);font-weight:600;font-size:14px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+h1{font-size:clamp(46px,9vw,88px);line-height:.92}
+h1 span{display:inline-block;background:var(--acc);color:var(--on-acc);padding:.04em .26em .02em .2em;transform:skewX(-9deg);box-shadow:6px 6px 0 #000,7px 7px 0 var(--line)}
+.meter{display:flex;flex-wrap:wrap;gap:18px 32px}
+.kpi{min-width:150px}
+.kpi .lbl{font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.kpi .num{font-family:var(--f-display);font-weight:900;font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .num small{font-size:24px;color:var(--muted);font-weight:800}
+.bar{height:8px;background:var(--off);margin-top:8px;clip-path:polygon(0 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .25s ease}
+
+.tools{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-bottom:22px}
+.btn{font-family:var(--f-ui);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border:2px solid var(--paper-2);color:var(--paper);display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:var(--acc-hi);color:#fff}
+.btn[aria-checked="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.btn.warn{border-color:var(--acc);background:var(--acc);color:var(--on-acc)}
+.sw{width:14px;height:14px;border:2px solid currentColor;display:inline-block;position:relative}
+.btn[aria-checked="true"] .sw::after{content:"";position:absolute;inset:1px;background:currentColor}
+.status{font-family:var(--f-ui);font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-left:auto}
+.hint{margin:0 0 16px;color:var(--muted);max-width:68ch}
+
+h2{font-size:30px;letter-spacing:.02em;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+h2::before{content:"";width:14px;height:28px;background:var(--acc);transform:skewX(-14deg);flex:none}
+section{margin-bottom:44px}
+
+/* ---------- week ---------- */
+.week{display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
+.day{display:grid;grid-template-columns:96px minmax(0,1fr) minmax(0,1fr);gap:0;align-items:stretch}
+.dh{background:var(--acc);color:var(--on-acc);padding:10px 14px;display:flex;flex-direction:column;justify-content:center;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+.dh b{font-family:var(--f-display);font-weight:900;font-size:36px;line-height:1;letter-spacing:.02em}
+.dh span{font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.slot{padding:10px 10px 12px;min-width:0}
+.slot.d{background:var(--paper);color:var(--ink);--focus:var(--on-acc)}
+.slot.n{background:var(--panel);border:1px solid var(--line);--focus:#fff}
+.slot button:focus-visible{outline-color:var(--focus)}
+.sh{display:flex;align-items:center;gap:7px;font-family:var(--f-ui);font-weight:700;font-size:13px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+.sh svg{flex:none}
+.sh em{font-style:normal;margin-left:auto;letter-spacing:.06em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.slot.d .sh{color:#4a6088}
+.slot.n .sh{color:var(--muted)}
+.chips{display:flex;flex-direction:column;gap:5px}
+.empty{margin:4px 0;font-family:var(--f-ui);font-size:14px;letter-spacing:.1em;text-transform:uppercase;opacity:.6}
+
+.chip{display:grid;grid-template-columns:2.1em minmax(0,1fr) auto;align-items:center;gap:6px;width:100%;text-align:left;padding:6px 8px;box-shadow:3px 3px 0 rgba(0,0,0,.55);transition:transform .08s ease,background-color .12s ease}
+.chip:hover{transform:translate(-1px,-1px)}
+.chip .cn{font-family:var(--f-ui);font-weight:600;font-size:12px;letter-spacing:.04em;opacity:.7}
+.chip .nm{font-family:var(--f-ui);font-weight:700;font-size:18px;line-height:1.1;letter-spacing:.03em;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip .nm i{font-style:normal;margin-left:2px}
+.chip .nm.long{font-size:15px;letter-spacing:0}
+.chip .rp{font-family:var(--f-ui);font-weight:700;font-size:13px;min-width:30px;text-align:center;padding:1px 6px;font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;justify-content:center;height:20px}
+.slot.d .chip{background:var(--ink);color:var(--paper)}
+.slot.d .chip .nm i{color:var(--acc-hi)}
+.slot.d .chip:hover{background:var(--acc);color:var(--on-acc)}
+.slot.d .chip:hover .nm i,.slot.d .chip:hover .rain{color:var(--on-acc)}
+.slot.d .chip .rp{background:var(--acc);color:var(--on-acc)}
+.slot.d .chip:hover .rp{background:var(--ink);color:var(--paper)}
+.slot.n .chip{background:var(--acc);color:var(--on-acc)}
+.slot.n .chip .nm i,.slot.n .chip .rain{color:var(--on-acc)}
+.slot.n .chip:hover{background:var(--acc-hi)}
+.slot.n .chip .rp{background:var(--ink);color:var(--paper)}
+.slot.d .chip.is-done{background:#c1d3ec;color:#6f83a6;box-shadow:none}
+.slot.d .chip.is-done .rp{background:#6f83a6;color:#fff}
+.slot.d .chip.is-done .rain,.slot.d .chip.is-done .nm i{color:#6f83a6}
+.slot.n .chip.is-done{background:var(--panel-2);color:var(--muted);box-shadow:none}
+.slot.n .chip.is-done .rp{background:var(--off);color:var(--paper-2)}
+.slot.n .chip.is-done .rain,.slot.n .chip.is-done .nm i{color:var(--muted)}
+.chip.is-done .nm{text-decoration:line-through;text-decoration-thickness:2px}
+
+@media (max-width:719px){
+  .day{grid-template-columns:minmax(0,1fr)}
+  .dh{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:12px;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+  .dh b{font-size:30px}
+}
+@media (min-width:1100px){
+  .week{grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:auto auto auto;column-gap:8px;row-gap:8px}
+  .day{grid-template-columns:minmax(0,1fr);grid-row:span 3;grid-template-rows:subgrid;row-gap:normal}
+  .dh{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);padding:10px 12px}
+  .chip{grid-template-columns:minmax(0,1fr) auto;padding:6px 6px 6px 8px}
+  .chip .cn{display:none}
+  .chip .nm{font-size:17px}
+  .chip .nm.long{font-size:15px}
+  .chip .rp{min-width:26px;padding:1px 4px}
+  .sh{letter-spacing:.1em;gap:5px}
+}
+
+/* ---------- roster ---------- */
+.roster{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:34px minmax(0,1.2fr) auto auto;gap:10px 22px;align-items:center;padding:12px 10px;border-bottom:1px solid var(--line);background:var(--panel)}
+.row:nth-child(even){background:#0e1a33}
+.row.is-done .who b{text-decoration:line-through;text-decoration-thickness:2px;color:var(--muted)}
+.ck{width:32px;height:32px;border:2px solid var(--paper-2);display:grid;place-items:center;color:transparent}
+.ck:hover{border-color:var(--acc-hi)}
+.row.is-done .ck{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}
+.who{min-width:0}
+.who b{display:block;font-family:var(--f-ui);font-weight:700;font-size:24px;line-height:1.05;letter-spacing:.03em;text-transform:uppercase}
+.who span{display:block;font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+.who small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.strip{display:flex;gap:3px}
+.md{display:grid;gap:2px;justify-items:center;font-family:var(--f-ui);font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.04em}
+.sq{width:17px;height:9px;background:var(--off)}
+.sq.on{background:var(--acc)}
+.sq.maybe{background:repeating-linear-gradient(135deg,var(--acc) 0 2px,var(--off) 2px 4px)}
+.rank{display:flex;align-items:center;gap:12px}
+.pw{display:grid}
+.pips{display:flex;gap:3px}
+.pip{width:24px;height:32px;background:var(--off);color:var(--muted);font-family:var(--f-ui);font-weight:700;font-size:13px;transform:skewX(-10deg);font-variant-numeric:tabular-nums}
+.pip:hover{background:#2c4478;color:#fff}
+.pip.on{background:var(--acc);color:var(--on-acc)}
+.pip.on:hover{background:var(--acc-hi)}
+.pip[aria-checked="true"]{background:var(--paper);color:var(--ink)}
+.read{font-family:var(--f-display);font-weight:800;font-size:26px;min-width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--paper)}
+.read small{font-size:15px;color:var(--muted)}
+@media (max-width:959px){
+  .row{grid-template-columns:34px minmax(0,1fr);}
+  .strip,.rank,.trig{grid-column:1 / -1}
+  .strip,.trig{padding-left:44px}
+  .rank{padding-left:44px;flex-wrap:wrap}
+}
+
+/* ---------- notes ---------- */
+.notes{margin:0;padding:0;list-style:none;display:grid;gap:10px;max-width:78ch}
+.notes li{padding-left:20px;position:relative;color:var(--paper-2)}
+.notes li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:9px;background:var(--acc);transform:skewX(-14deg)}
+.notes b{color:#fff;font-weight:600}
+
+/* ---------- milestones ---------- */
+.jump{display:flex;flex-wrap:wrap;gap:8px 20px;margin:-8px 0 26px}
+.jump a{font-family:var(--f-ui);font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--paper-2);text-decoration:none;border-bottom:2px solid var(--acc);padding-bottom:2px}
+.jump a:hover{color:#fff;border-color:var(--acc-hi)}
+.jump a:focus-visible{outline:3px solid var(--acc-hi);outline-offset:3px}
+.sech{display:flex;align-items:center;gap:12px;flex:1;text-align:left;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit}
+.sech .chev{margin-left:auto;flex:none;width:11px;height:11px;border-right:3px solid var(--muted);border-bottom:3px solid var(--muted);transform:rotate(45deg) translate(-3px,-3px);transition:transform .15s}
+.sech[aria-expanded="false"] .chev{transform:rotate(-45deg)}
+.sech:hover .chev{border-color:var(--paper)}
+.colall{font-family:var(--f-ui);font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-left:auto}
+.colall:hover{color:var(--paper)}
+@media (prefers-reduced-motion:reduce){.sech .chev{transition:none}}
+.legend{margin:0 0 14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:14px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.tag{font-family:var(--f-ui);font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;display:inline-block;line-height:1.35;white-space:nowrap}
+.tag.stat{background:var(--paper);color:var(--ink)}
+.tag.mem{background:var(--acc);color:var(--on-acc)}
+.tag.fecha{border:1.5px solid var(--paper-2);color:var(--paper);padding:0 6px}
+.tag.req{background:var(--off);color:var(--paper-2)}
+.tag.perk{border:1.5px solid var(--acc);color:var(--acc);padding:0 6px}
+.tag.ev-start{background:var(--paper);color:var(--ink)}
+.tag.ev-unlock,.tag.ev-rank{border:1.5px solid var(--paper-2);color:var(--paper);padding:0 6px}
+.tag.ev-deadline{background:var(--acc);color:var(--on-acc)}
+.tag.ev-lock{background:var(--off);color:var(--paper-2)}
+.marks{display:flex;gap:3px;margin-top:5px;min-height:8px}
+.mk{width:24px;display:flex;flex-wrap:wrap;gap:2px;justify-content:center;align-content:flex-start}
+.mk i{display:block;width:6px;height:6px;transform:skewX(-10deg)}
+.mk .m-stat{background:var(--paper)}
+.mk .m-mem{background:var(--acc)}
+.mk .m-fecha{border:1.5px solid var(--paper-2)}
+.mk .m-req{background:var(--muted)}
+.mk .m-perk{border:1.5px solid var(--acc);background:transparent}
+.who .next{display:block;text-transform:none;letter-spacing:0;font-family:var(--f-body);font-weight:400;font-size:13px;color:var(--paper-2);margin-top:5px}
+.who .next b{display:inline;font-size:12px;line-height:1.4;font-family:var(--f-ui);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.who .next em{font-style:normal;color:var(--muted)}
+.who .next.lt b{color:var(--acc)}
+.ms{grid-column:1 / -1}
+.ms summary{cursor:pointer;font-family:var(--f-ui);font-weight:700;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--paper-2);list-style:none;display:inline-flex;align-items:center;gap:8px;padding:4px 0}
+.ms summary::-webkit-details-marker{display:none}
+.ms summary::before{content:"+";display:inline-grid;place-items:center;width:18px;height:18px;border:2px solid var(--paper-2);font-size:14px;line-height:1}
+.ms[open] summary::before{content:"–"}
+.ms summary:focus-visible{outline:3px solid var(--acc-hi);outline-offset:2px}
+.ms ul{list-style:none;margin:8px 0 2px;padding:0;display:grid;gap:7px}
+.ms li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.ms .r{font-family:var(--f-ui);font-weight:700;font-size:15px;min-width:40px;color:var(--acc);font-variant-numeric:tabular-nums}
+.ms .tx{flex:1 1 260px;min-width:0;color:var(--paper-2)}
+.ms .tx b{color:#fff;font-weight:600}
+.ms .tx em{font-style:normal;color:var(--muted)}
+.ms .ok{color:#fff;font-family:var(--f-ui);font-weight:700;letter-spacing:.06em;margin-left:6px}
+.dim{opacity:.45}
+.strike{text-decoration:line-through}
+
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);padding:14px 14px 12px}
+.card h3{margin:0 0 4px;font-family:var(--f-display);font-weight:900;font-size:26px;letter-spacing:.03em;text-transform:uppercase}
+.mine{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.mine .pips{gap:3px}
+.mine .pip{width:26px;height:26px;font-size:13px}
+.lv{display:grid;grid-template-columns:112px minmax(0,1fr);gap:4px 10px;padding:8px 0;border-top:1px solid var(--line)}
+.lv .n{font-family:var(--f-display);font-weight:900;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.lv .n small{display:block;font-family:var(--f-ui);font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.lv.met .n{color:var(--muted)}
+.lv .who2{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.ent{font-family:var(--f-ui);font-weight:700;font-size:16px;letter-spacing:.03em;text-transform:uppercase}
+.ent small{font-weight:600;font-size:13px;color:var(--acc);letter-spacing:.06em}
+.ent i{font-style:normal;font-family:var(--f-body);text-transform:none;font-weight:400;font-size:12px;color:var(--muted);letter-spacing:0}
+.nobody{color:var(--muted)}
+.ck2{color:var(--paper);font-family:var(--f-ui);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+
+.scroll{overflow-x:auto;border-top:1px solid var(--line)}
+.tbl{width:100%;min-width:760px;border-collapse:collapse}
+.tbl th{font-family:var(--f-ui);font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;background:var(--panel)}
+.tbl tr:nth-child(even) td{background:#0e1a33}
+.tbl .cf{font-family:var(--f-ui);font-weight:700;font-size:18px;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
+.tbl .cf small{display:block;font-size:12px;font-weight:600;letter-spacing:.14em;color:var(--acc)}
+.tbl .mn{font-weight:600;color:#fff}
+.tbl td.dt2 b{font-family:var(--f-display);font-weight:800;font-size:20px;white-space:nowrap}
+.tbl .wn{display:block;font-size:14px;color:var(--muted);margin-top:2px;max-width:34ch}
+.tbl .rq{display:block;margin-bottom:3px}
+.tbl .rq i{color:var(--muted);font-style:normal}
+.tbl .rr{font-family:var(--f-display);font-weight:800;font-size:22px;white-space:nowrap}
+.tbl tr.later td{opacity:.55}
+
+.tl{list-style:none;margin:0;padding:0}
+.tl h3{margin:22px 0 4px;font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px}
+.tl h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.ti{display:grid;grid-template-columns:96px 112px minmax(0,1fr);gap:4px 12px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line)}
+.ti .dt{font-family:var(--f-display);font-weight:900;font-size:28px;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ti .tx{color:var(--paper-2)}
+.ti .tx b{color:#fff;font-weight:600}
+@media (max-width:640px){
+  .ti{grid-template-columns:110px minmax(0,1fr)}
+  .ti .tx{grid-column:1 / -1}
+}
+.tl h3.cur{color:var(--paper)}
+.tl h3.cur::before{content:"";width:12px;height:22px;background:var(--acc);transform:skewX(-14deg)}
+
+/* ---------- game month ---------- */
+.monthbar{margin:0 0 22px;display:grid;gap:8px}
+.monthbar .lbl{font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.monthbar .lbl b{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.04em;color:var(--paper)}
+.mrow{display:flex;flex-wrap:wrap;gap:4px}
+.mb{min-width:54px;height:38px;padding:0 12px;background:var(--off);color:var(--paper-2);font-family:var(--f-ui);font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;transform:skewX(-10deg)}
+.mb:hover{background:#2c4478;color:#fff}
+.mb[aria-checked="true"]{background:var(--paper);color:var(--ink)}
+.mb.all[aria-checked="true"]{background:var(--acc);color:var(--on-acc)}
+.mespanel{margin:22px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.mespanel h3{margin:0 0 8px;font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.05em;text-transform:uppercase}
+.mespanel ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.mespanel li{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline;color:var(--paper-2)}
+.mespanel li b{color:#fff;font-weight:600}
+.mespanel .d{font-family:var(--f-display);font-weight:900;font-size:20px;color:#fff;min-width:64px;font-variant-numeric:tabular-nums}
+.mespanel .none{color:var(--muted);margin:0}
+.mespanel .warn{grid-column:1 / -1;margin:0;color:var(--paper-2);font-size:14px}
+.row.later{opacity:.55}
+.wnote{margin:12px 0 0;color:var(--muted);font-size:14px}
+
+/* ---------- rain and unscheduled ---------- */
+.rain{flex:none;vertical-align:-2px;margin-left:6px;width:15px;height:15px;color:var(--rain)}
+.rain.maybe{opacity:.5}
+.chip .nm .rain{margin-left:5px;width:13px;height:13px;vertical-align:-1px}
+.legend .rain,.wnote .rain{margin:0}
+.sub{margin:34px 0 6px;font-family:var(--f-display);font-weight:800;font-size:24px;letter-spacing:.06em;text-transform:uppercase;color:var(--paper);display:flex;align-items:center;gap:12px}
+.sub::after{content:"";flex:1;height:1px;background:var(--line)}
+.trig{max-width:210px;font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);line-height:1.3}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <span class="kicker">Persona 3 Reload · Iwatodai · April 200X to January 200X</span>
+      <h1><span>Social Links</span></h1>
+    </div>
+    <div class="meter" id="meter" aria-live="polite"></div>
+  </header>
+
+  <div class="monthbar" role="radiogroup" aria-label="Game month">
+    <div class="lbl" id="monthLbl"></div>
+    <div class="mrow" id="monthRow"></div>
+  </div>
+
+  <div class="tools">
+    <button type="button" class="btn" id="hideBtn" role="switch" aria-checked="false"><span class="sw"></span>Hide completed</button>
+    <button type="button" class="btn" id="hideMaxBtn" role="switch" aria-checked="false"><span class="sw"></span>Hide maxed</button>
+    <button type="button" class="btn" id="spoilBtn" role="switch" aria-checked="false"><span class="sw"></span>Hide spoilers</button>
+    <button type="button" class="btn" id="resetBtn">Reset all</button>
+    <span class="status" id="status" role="status" aria-live="polite"></span>
+  </div>
+  <p class="hint" id="spoilHint" hidden style="margin-top:-8px"></p>
+
+  <nav class="jump" aria-label="Sections">
+    <a href="#semana">Week</a><a href="#rangos">Ranks</a><a href="#stats">Social stats</a><a href="#inicio">How links open</a><a href="#fechas">Locks &amp; dates</a><a href="#notas">Notes</a>
+    <button type="button" class="colall" id="colAllBtn">Collapse all</button>
+  </nav>
+
+  <section id="semana" aria-labelledby="hSemana">
+    <h2 id="hSemana">Week</h2>
+    <p class="hint">Click a link to mark it as completed. Set the rank in the list below; at R10 it’s marked completed automatically. Links with no weekly schedule<span data-sp> (S.E.E.S., Pharos and the Nyx Annihilation Team)</span> are at the end of Ranks. “Afternoon” is after classes; “Night” is only used by Tanaka and Mutatsu.</p>
+    <div class="week" id="week"></div>
+    <p class="wnote">* according to some guides, not all · • starts this month (the date is in the panel below and in Milestones)</p>
+    <div class="mespanel" id="mesBox" hidden></div>
+  </section>
+
+  <section id="rangos" aria-labelledby="hRangos">
+    <h2 id="hRangos">Ranks</h2>
+    <p class="legend">Under each rank:
+      <span><i class="tag stat">Stat</i> social stat required</span>
+      <span><i class="tag fecha">Date</i> lock, unlock or deadline</span>
+      <span><i class="tag req">Other</i> prerequisite or other condition</span>
+      <span><i class="tag perk">Perk</i> Ultimate Persona you unlock</span>
+    </p>
+    <ol class="roster" id="roster"></ol>
+    <h3 class="sub">Links with no weekly schedule</h3>
+    <p class="hint">They rank up on their own with the story. Under each one is what’s known about when each rank comes.</p>
+    <ol class="roster" id="story"></ol>
+  </section>
+
+  <section id="stats" aria-labelledby="hStats">
+    <h2 id="hStats">Social stats</h2>
+    <p class="hint">Which level of each stat you need and for which link, with the points needed to reach each level. Set your current level and the requirements you already meet are dimmed.</p>
+    <div class="skills" id="skillsBox"></div>
+  </section>
+
+  <section id="inicio" aria-labelledby="hIni">
+    <h2 id="hIni">How each link opens</h2>
+    <p class="hint">From when each link can be started and what it takes. Several are chained: Strength requires Chariot at R2, Justice requires Emperor at R1, Temperance requires Hierophant at R3, Devil requires Hermit at R4, Tower requires Strength at R4, Moon requires Magician at R3, Sun requires Hanged Man at R3 and Priestess requires Fortune at R1.</p>
+    <div class="scroll"><table class="tbl" id="memBox"></table></div>
+  </section>
+
+  <section id="fechas" aria-labelledby="hFechas">
+    <h2 id="hFechas">Locks &amp; dates</h2>
+    <p class="hint">When each link starts, and which deadlines and rescues to watch for.</p>
+    <ol class="tl" id="tlBox"></ol>
+  </section>
+
+  <section id="notas" aria-labelledby="hNotas">
+    <h2 id="hNotas">Notes</h2>
+    <ul class="notes">
+      <li><b>Schedules.</b> The grid applies to a normal school day. On Sundays and holidays only all-day links are available (Maya, Akinari, Mamoru, Nozomi, the night ones and a few more). During exams almost no school link appears.</li>
+      <li><b>Exams.</b> According to one guide: May 18–22, Jul 14–18, Oct 13–16 and Dec 14–18. Mitsuru is still available during the December ones.</li>
+      <li data-sp><b>Rescues.</b> Bunkichi disappears in Tartarus on Sep 12 and must be rescued before Oct 4; Maiko disappears on Oct 21 and must be rescued before Nov 3. Otherwise the links are lost.</li>
+      <li><b>Arcana.</b> With a Persona of the same Arcana equipped, each meeting gives more points. At R10 of each link you can fuse its Ultimate Persona.</li>
+      <li><b>Stats.</b> Fuuka requires Courage 6, Yukari Charm 6 and Mitsuru Academics 6, so it pays to raise those stats before their dates. Tanaka, Mutatsu and Mamoru require level 4, and Akinari, Academics 4.</li>
+      <li><b>Uncertain data.</b> Days: Hidetoshi is listed on Monday, Wednesday and Friday in most guides and Monday to Saturday in others; Mitsuru, Tuesday, Thursday and Saturday in most and Monday to Saturday in others; Tanaka, Tuesday and Saturday (one guide adds Thursday and another Monday and Sunday); Mamoru, Wednesday, Friday and Sunday (others add Tuesday or Saturday); Bunkichi and Mitsuko, Tuesday to Saturday or Tuesday to Sunday; Maya is listed on Sundays and holidays only (one guide says every day). Start dates: Fuuka Jun 19 or Jun 22, Yukari Jul 24 or Jul 25, Yuko Apr 24 or Apr 25, Chihiro Apr 27 or May 7, Bebe May 8 or May 29, Mutatsu May 23 or Jul 26, Mamoru Aug 2 or Aug 5, Akinari Aug 9 or Aug 30, Nozomi Apr 28 or May 13, Aigis Jan 8 or Jan 9. Mutatsu requires Courage 4 in two guides and 2 in two others; Aigis is listed on Friday only in one guide.</li>
+      <li><b>Sources.</b> RPG Site (per-link guides), Game8, Push Square, Inverse, a Steam guide, PlayerAuctions and GameFAQs, cross-checked against each other. If something doesn’t match your playthrough, it may depend on your stats or on what you’ve already done.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function(){
+  var DAYS=[['MON','Monday'],['TUE','Tuesday'],['WED','Wednesday'],['THU','Thursday'],['FRI','Friday'],['SAT','Saturday'],['SUN','Sunday']];
+  var L=['M','T','W','T','F','S','S'];
+  var ALL=[0,1,2,3,4,5,6];
+  var MONTHS=['','January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // Level names and minimum points for each stat (levels 1 to 6).
+  var STAT_NAMES={
+    'Academics':['Slacker','Average','Above Average','Smart','Intelligent','Genius'],
+    'Charm':['Plain','Unpolished','Confident','Smooth','Popular','Charismatic'],
+    'Courage':['Timid','Ordinary','Determined','Tough','Fearless','Badass']
+  };
+  var STAT_PTS={
+    'Academics':[0,20,55,100,155,230],'Charm':[0,15,30,45,70,100],'Courage':[0,15,30,45,60,80]
+  };
+  var STAT_KEYS=Object.keys(STAT_NAMES);
+
+  // Milestones per link. r = rank you reach (or 99 if not applicable). Dates are stored as month/day and displayed as e.g. "Apr 22".
+  function S(r,s,lv,note,opt){return {r:r,k:'stat',s:s,lv:lv,n:note||'',opt:!!opt};}
+  function F(r,d,ev,t,sp){return {r:r,k:'fecha',d:d,ev:ev,t:t,sp:sp||''};}
+  function Q(r,t,sp){return {r:r,k:'req',t:t,sp:sp||''};}
+  function P(r,name,fx){return {r:r,k:'perk',name:name,fx:fx||''};}
+  function K(r,d,t){return {r:r,k:'fecha',d:d,ev:'rank',t:t||'Ranks up with the story'};}
+  function MAXP(name){return P(10,'Ultimate Persona: '+name,'Can be fused once you reach R10');}
+
+  // day/night: indices 0=Monday … 6=Sunday. dayMaybe/nightMaybe: according to some guides.
+  var C=[
+    {id:'kenji',name:'Kenji',arc:'Magician',n:'I',day:[1,3,4],night:[],where:'Class 2F',ms:[
+      F(1,'4/22','start','Starts on its own: can’t be missed'),Q(1,'Doesn’t appear during exams'),
+      Q(3,'R3 opens Nozomi’s link (Moon), if you also have Charm 2 and the Odd Morsel'),MAXP('Futsunushi')]},
+    {id:'fuuka',name:'Fuuka',arc:'Priestess',n:'II',day:[0,4,5],night:[],where:'2F hallway',ms:[
+      F(1,'6/19','start','Earliest date (another guide says Jun 22)'),S(1,'Courage',6,'Have it before this date'),
+      Q(1,'Needs the Fortune link (Keisuke) started, at R1'),
+      Q(6,'Between R6 and R7: the choice that decides romance or friendship'),MAXP('Scathach')]},
+    {id:'mitsuru',name:'Mitsuru',arc:'Empress',n:'III',day:[1,3,5],dayMaybe:[0,2,4],night:[],where:'Faculty Office entrance',ms:[
+      F(1,'11/21','start','From Nov 21, with Academics maxed'),S(1,'Academics',6),
+      Q(1,'Still available during the December exams'),
+      Q(7,'Between R7 and R8: the choice that decides romance or friendship'),MAXP('Alilat')]},
+    {id:'hidetoshi',name:'Hidetoshi',arc:'Emperor',n:'IV',day:[0,2,4],dayMaybe:[1,3,5],night:[],where:'Student Council Room (2F)',ms:[
+      F(1,'4/27','start','Mitsuru asks you to join the Student Council'),
+      Q(1,'Ask Ms. Toriumi in the Faculty Office for permission and stop by the Student Council Room')]},
+    {id:'bunkichi',name:'Bunkichi',arc:'Hierophant',n:'V',day:[1,2,3,4,5],dayMaybe:[6],night:[],where:'Bookworms (Bunkichi and Mitsuko), used bookstore in Iwatodai',ms:[
+      F(1,'4/25','start','Bring a persimmon leaf from the school tree and show it to him'),
+      Q(3,'R3 opens Bebe’s link (Temperance)'),
+      F(99,'9/12','lock','Bunkichi disappears in Tartarus: the link is locked'),
+      F(99,'10/4','deadline','Rescue him before Oct 4 or the link is lost','9/12')]},
+    {id:'yukari',name:'Yukari',arc:'Lovers',n:'VI',day:[0,2,3,5],night:[],where:'Class 2F',ms:[
+      F(1,'7/25','start','From Jul 25, after Yakushima (another guide says Jul 24)'),S(1,'Charm',6,'Have it before this date'),
+      Q(4,'Between R4 and R7 there are several choices that set the romance route'),MAXP('Cybele')]},
+    {id:'kazushi',name:'Kazushi',arc:'Chariot',n:'VII',day:[0,1,3,4],night:[],where:'Class 2F · track team',ms:[
+      F(1,'4/23','start','Starts when you join the track team'),
+      F(1,'5/28','deadline','If you haven’t started it yet, R1 triggers on its own'),
+      Q(2,'After R1 and R2, invite Yuko to walk home: her link opens'),MAXP('Thor')]},
+    {id:'chihiro',name:'Chihiro',arc:'Justice',n:'VIII',day:[1,3,5],night:[],where:'2F hallway',ms:[
+      F(1,'5/7','start','Earliest date (RPG Site: talk to her from Apr 27)'),
+      Q(1,'Needs Emperor (Hidetoshi) at R1: join the Student Council and talk to her three times before inviting her'),
+      Q(4,'Between R4 and R5: the choice that decides romance or friendship'),MAXP('Melchizedek')]},
+    {id:'maya',name:'Maya',arc:'Hermit',n:'IX',day:[6],night:[],where:'Laptop in your room (Sundays and holidays)',ms:[
+      F(1,'4/29','start','Junpei gives you the game Innocent Sin Online (from Apr 28)'),
+      Q(1,'Sundays and holidays only: takes the whole day'),MAXP('Arahabaki')]},
+    {id:'keisuke',name:'Keisuke',arc:'Fortune',n:'X',day:[1,2,3],night:[],where:'Art Club room',ms:[
+      F(1,'6/17','start','Starts when you join the art club'),
+      Q(1,'R1 can open Fuuka’s link (Priestess), if you have Courage 6')]},
+    {id:'yuko',name:'Yuko',arc:'Strength',n:'XI',day:[2,5],night:[],where:'2F hallway',ms:[
+      F(1,'4/24','start','Earliest date (another guide says Apr 25)'),
+      Q(1,'Needs Chariot (Kazushi) at R2: invite her to walk home'),
+      Q(2,'Between R2–R3, R4–R5 and R6–R7 there are choices that set the romance route'),
+      Q(3,'Only two days a week: one of the hardest links to max'),MAXP('Atavaka')]},
+    {id:'maiko',name:'Maiko',arc:'Hanged Man',n:'XII',day:[0,2,5],night:[],where:'Naganaki Shrine',ms:[
+      F(1,'5/6','start','Buy a Mad Bull and some Weird Takoyaki, give them to her and come back another day'),
+      Q(3,'R3 opens Akinari’s link (Sun)'),
+      F(99,'10/21','lock','Maiko disappears in Tartarus: the link is locked'),
+      F(99,'11/3','deadline','Rescue her before Nov 3 or the link is lost','10/21'),MAXP('Attis')]},
+    {id:'bebe',name:'Bebe',arc:'Temperance',n:'XIV',day:[1,2,4],night:[],where:'2F hallway · Home Economics room',ms:[
+      F(1,'5/29','start','Most repeated date (another guide says May 8)'),S(1,'Academics',2),
+      Q(1,'Needs Hierophant (Bunkichi and Mitsuko) at R3')]},
+    {id:'tanaka',name:'Tanaka',arc:'Devil',n:'XV',day:[],night:[1,5],nightMaybe:[3],where:'Paulownia Mall (at night)',ms:[
+      F(1,'5/16','start','Earliest date (another guide says Jun 23)'),S(1,'Charm',4),
+      Q(1,'Needs Hermit (Maya) at R4'),Q(1,'Asks for ¥40,000 in total: ¥20,000, ¥10,000 and ¥10,000'),
+      Q(2,'Your answers don’t matter: the link always ranks up'),MAXP('Beelzebub')]},
+    {id:'mutatsu',name:'Mutatsu',arc:'Tower',n:'XVI',day:[],night:[3,4,5,6],where:'Club Escapade, Paulownia Mall (at night)',ms:[
+      F(1,'5/23','start','Earliest date (another guide says Jul 26)'),S(1,'Courage',4,'Two guides require only 2'),
+      Q(1,'Needs Strength (Yuko) at R4'),
+      Q(1,'Ask the bartender for the drinks: Margarita, Bloody Mary, Screwdriver and oolong tea'),MAXP('Chi You')]},
+    {id:'mamoru',name:'Mamoru',arc:'Star',n:'XVII',day:[2,4,6],night:[],where:'Iwatodai Strip Mall',ms:[
+      F(1,'8/2','start','You meet him at the track meet (another guide says Aug 5)'),S(1,'Courage',4),MAXP('Helel')]},
+    {id:'nozomi',name:'Nozomi',arc:'Moon',n:'XVIII',day:ALL,night:[],where:'Paulownia Mall',ms:[
+      F(1,'5/13','start','Earliest date with the Odd Morsel (another guide says Apr 28)'),S(1,'Charm',2),
+      Q(1,'Needs Magician (Kenji) at R3 and the Odd Morsel'),Q(1,'Answer the food quiz correctly'),MAXP('Sandalphon')]},
+    {id:'akinari',name:'Akinari',arc:'Sun',n:'XIX',day:[6],night:[],where:'Naganaki Shrine (Sundays only)',ms:[
+      F(1,'8/9','start','From Aug 9 (another guide says Aug 30)'),S(1,'Academics',4),
+      Q(1,'Needs Hanged Man (Maiko) at R3'),Q(1,'Return his red pen: Koromaru has it at the dorm'),
+      Q(1,'Only appears on Sundays: prioritize him over other Sunday links'),MAXP('Asura')]},
+    {id:'aigis',name:'Aigis',arc:'Aeon',n:'XXI',day:[0,1,2,3,4,5],night:[],where:'Class 2F',ms:[
+      F(1,'1/8','start','Starts after classes (one source says Jan 9)'),Q(1,'Not available on Jan 25'),
+      Q(7,'Between R7 and R8: the choice that decides romance or friendship'),MAXP('Metatron')]},
+    // No weekly schedule
+    {id:'sees',name:'S.E.E.S.',arc:'Fool',n:'0',story:1,day:[],night:[],trig:'Ranks up with the story',where:'Story',ms:[
+      F(1,'4/18','start','Starts on its own with the story'),
+      F(10,'12/31','unlock','R10 only in the true ending (sparing Ryoji)')]},
+    {id:'pharos',name:'Pharos',arc:'Death',n:'XIII',story:1,day:[],night:[],trig:'Ranks up with the story',where:'Story',ms:[
+      F(1,'6/12','start','Starts on its own'),K(10,'11/4','Max rank, automatic')]},
+    {id:'nyx',name:'Nyx Annihilation Team',arc:'Judgement',n:'XX',story:1,day:[],night:[],trig:'Ranks up with the final Tartarus floors',where:'Story, true ending only',ms:[
+      F(1,'12/31','start','Starts Dec 31, only if you spared Ryoji'),
+      K(2,'','Tartarus floor 227'),K(3,'','Floor 230'),K(4,'','Floor 236'),K(5,'','Floor 241'),K(6,'','Floor 246'),
+      K(7,'','Floor 247'),K(8,'','Floor 253'),K(9,'','Floor 254'),K(10,'','Floor 255, after the final battle')]}
+  ];
+  var ids={};C.forEach(function(c){ids[c.id]=c;c.ms.forEach(function(m,i){m._i=i;});c.ms.sort(function(a,b){return a.r-b.r||a._i-b._i;});});
+  C.forEach(function(c){var nd='';for(var q=c.ms.length-1;q>=0;q--){var z=c.ms[q];if(z.k==='fecha'&&z.ev==='rank'){if(z.d)nd=z.d;else if(nd)z.spd=nd;}}c.gates=[];c.ms.forEach(function(m){if(m.k==='fecha'&&m.ev==='rank'&&m.d)c.gates.push({r:m.r,o:ord(m.d)});});});
+
+  var SUN='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="currentColor"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M12.6 3.4l-1.4 1.4M4.8 11.2l-1.4 1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>';
+  var MOON='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M13 9.6A5.6 5.6 0 0 1 6.4 3a5.6 5.6 0 1 0 6.6 6.6z" fill="currentColor"/></svg>';
+  var CHECK='<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"/></svg>';
+  var RAINPATH='<path d="M4.6 9.4A3 3 0 0 1 5 3.5a4 4 0 0 1 7.6.9A2.6 2.6 0 0 1 12 9.4z" fill="currentColor"/><path d="M5.2 11.3l-1 2.6M8.6 11.3l-1 2.6M12 11.3l-1 2.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>';
+  function rainSvg(lv,label){
+    var t=lv===2?'Rainy day: sources disagree':'Available on rainy days';
+    return '<svg class="rain'+(lv===2?' maybe':'')+'" viewBox="0 0 16 16" role="img" aria-label="'+(label||t)+'"><title>'+t+'</title>'+RAINPATH+'</svg>';
+  }
+  var RAINDECOR='<svg class="rain" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">'+RAINPATH+'</svg>';
+
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function parseD(d){var p=d.split('/');return {m:+p[0],d:+p[1]};}
+  function fmtD(d){var x=parseD(d);return MABBR[x.m]+' '+x.d;}
+  function ord(d){var x=parseD(d);return (x.m<4?x.m+12:x.m)*100+x.d;}
+  function statLabel(m){return m.s+' '+m.lv;}
+  var MABBR=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var MORDER=[4,5,6,7,8,9,10,11,12,1];
+  function yearOf(mo){return '200X';}
+  function startD(c){for(var i=0;i<c.ms.length;i++){if(c.ms[i].ev==='start')return c.ms[i].d;}return '4/1';}
+  // State of a link in the chosen month: all, later (not yet), over (already ended), starts (starts this month), active.
+  function monthState(c){
+    var mo=state.month;
+    if(!mo)return {s:'all'};
+    var d=startD(c),so=ord(d),a=ord(mo+'/1'),b=ord(mo+'/31');
+    if(so>b)return {s:'later',d:d};
+    if(c.end&&ord(c.end)<a)return {s:'over',d:c.end};
+    if(so>=a)return {s:'starts',d:d};
+    return {s:'active',d:d};
+  }
+  // Hide spoilers: only applies when a month is chosen.
+  function SP(){return !!(state.spoil&&state.month);}
+  function hiddenC(c){return SP()&&monthState(c).s==='later';}
+  function dOf(m){
+    if(m.sp)return m.sp;
+    if(m.spd)return m.spd;
+    if(m.k==='mem'){var x=/(\d{1,2})\/(\d{1,2})/.exec(m.given||'');return x?x[2]+'/'+x[1]:'';}
+    return '';
+  }
+  function spHidden(m,c){
+    if(!SP())return false;
+    var b=ord(state.month+'/31'),d=dOf(m);
+    if(d&&ord(d)>b)return true;
+    if(m.k==='perk'&&m.r>10&&ord('1/13')>b)return true;
+    if(m.k==='fecha'&&(m.ev==='unlock'||m.ev==='rank'||m.ev==='lock')&&m.d&&ord(m.d)>b)return true;
+    if(m.ev==='start')return false;
+    for(var i=0;i<c.gates.length;i++){if(c.gates[i].r<=m.r&&c.gates[i].o>b)return true;}
+    return false;
+  }
+  function vis(c){return c.ms.filter(function(m){return !spHidden(m,c);});}
+  function avail(c,i,slot){
+    var main=(slot==='d'?c.day:c.night)||[],mb=(slot==='d'?c.dayMaybe:c.nightMaybe)||[];
+    var r=main.indexOf(i)>=0?'main':(mb.indexOf(i)>=0?'maybe':null);
+    if(!state.month||!r)return r;
+    var s=monthState(c).s;
+    return (s==='later'||s==='over')?null:r;
+  }
+
+  var KEY='p3r-sociallinks-v1';
+  var state={done:{},rank:{},stats:{},month:4,hide:false,hideMax:false,spoil:true,col:{}};
+  var openRows={};
+
+  function clean(o){
+    var out={done:{},rank:{},stats:{},month:0};
+    if(o&&typeof o==='object'){
+      var d=o.done||{},r=o.rank||{},s=o.stats||{};
+      C.forEach(function(c){
+        if(d[c.id]===true)out.done[c.id]=true;
+        var n=parseInt(r[c.id],10);
+        if(n>=1&&n<=10)out.rank[c.id]=n;
+      });
+      STAT_KEYS.forEach(function(k){var n=parseInt(s[k],10);if(n>=1&&n<=6)out.stats[k]=n;});
+      var mo=parseInt(o.month,10);if(mo>=1&&mo<=12)out.month=mo;
+    }
+    return out;
+  }
+  function loadLocal(){
+    try{
+      var raw=localStorage.getItem(KEY);
+      if(raw){var o=JSON.parse(raw);var c=clean(o);state.done=c.done;state.rank=c.rank;state.stats=c.stats;state.month=c.month;state.hide=!!o.hide;state.hideMax=!!o.hideMax;state.spoil=!!o.spoil;state.col=(o.col&&typeof o.col==='object')?o.col:{};}
+    }catch(e){}
+  }
+  function saveLocal(){
+    try{localStorage.setItem(KEY,JSON.stringify({done:state.done,rank:state.rank,stats:state.stats,month:state.month,hide:state.hide,hideMax:state.hideMax,spoil:state.spoil,col:state.col}));}catch(e){}
+  }
+  function snapshot(){return {done:state.done,rank:state.rank,stats:state.stats,month:state.month};}
+
+  var $week=document.getElementById('week'),$roster=document.getElementById('roster'),$story=document.getElementById('story'),$meter=document.getElementById('meter'),
+      $hide=document.getElementById('hideBtn'),$hideMax=document.getElementById('hideMaxBtn'),$spoil=document.getElementById('spoilBtn'),$spHint=document.getElementById('spoilHint'),$reset=document.getElementById('resetBtn'),$status=document.getElementById('status'),
+      $skills=document.getElementById('skillsBox'),$mrow=document.getElementById('monthRow'),$mlbl=document.getElementById('monthLbl'),$mes=document.getElementById('mesBox'),$mem=document.getElementById('memBox'),$tl=document.getElementById('tlBox');
+
+  /* ---------- week ---------- */
+  function chip(c,i,slot,maybe){
+    var done=!!state.done[c.id],r=state.rank[c.id]||0;
+    var st=monthState(c),starts=st.s==='starts';
+    var label=c.name+', '+c.arc+', '+(r?'rank '+r:'not started')+(done?', completed':'')+(maybe?', some days only':'')+(starts?', starts '+fmtD(st.d):'')+(c.rain?', available on rainy days':'');
+    return '<button type="button" class="chip'+(done?' is-done':'')+'" data-act="toggle" data-id="'+c.id+'" data-k="w'+i+slot+c.id+'" aria-pressed="'+done+'" aria-label="'+label+'" title="'+c.name+' · '+c.arc+(starts?' · starts '+fmtD(st.d):'')+(c.rain?' · available on rainy days'+(c.rain===2?' (uncertain)':''):'')+'">'+
+      '<span class="cn">'+c.n+'</span><span class="nm'+(c.name.length>9?' long':'')+'">'+c.name+(c.rain?'<svg class="rain'+(c.rain===2?' maybe':'')+'" viewBox="0 0 16 16" aria-hidden="true">'+RAINPATH+'</svg>':'')+(maybe?'<i>*</i>':'')+(starts?'<i>•</i>':'')+'</span>'+
+      '<span class="rp">'+(done?CHECK:(r?'R'+r:'—'))+'</span></button>';
+  }
+  function slotHtml(i,slot){
+    var list=[];
+    C.forEach(function(c){
+      var a=avail(c,i,slot);
+      if(a)list.push({c:c,maybe:a==='maybe'});
+    });
+    if(state.hide)list=list.filter(function(x){return !state.done[x.c.id];});
+    list=list.map(function(x,idx){return {c:x.c,maybe:x.maybe,idx:idx};}).sort(function(a,b){
+      var da=state.done[a.c.id]?1:0,db=state.done[b.c.id]?1:0;return da-db||a.idx-b.idx;});
+    var pending=list.filter(function(x){return !state.done[x.c.id];}).length;
+    var body=list.length?'<div class="chips">'+list.map(function(x){return chip(x.c,i,slot,x.maybe);}).join('')+'</div>':'<p class="empty">'+(state.hide?'All completed':'No one this month')+'</p>';
+    return '<div class="slot '+slot+'"><div class="sh">'+(slot==='d'?SUN+'Afternoon':MOON+'Night')+'<em>'+pending+' left</em></div>'+body+'</div>';
+  }
+  function renderWeek(){
+    $week.innerHTML=DAYS.map(function(d,i){
+      return '<article class="day" aria-label="'+d[1]+'"><div class="dh"><b>'+d[0]+'</b><span>'+d[1]+'</span></div>'+slotHtml(i,'d')+slotHtml(i,'n')+'</article>';
+    }).join('');
+  }
+
+  /* ---------- ranks ---------- */
+  function strip(c){
+    return '<div class="strip" role="img" aria-label="Weekly availability of '+c.name+'">'+ALL.map(function(i){
+      function cell(main,maybe){return (main||[]).indexOf(i)>=0?'on':((maybe||[]).indexOf(i)>=0?'maybe':'');}
+      var dcl=cell(c.day,c.dayMaybe),ncl=cell(c.night,c.nightMaybe);
+      return '<div class="md" title="'+DAYS[i][1]+(dcl?' · afternoon':'')+(ncl?' · night':'')+'">'+L[i]+'<span class="sq '+dcl+'"></span><span class="sq '+ncl+'"></span></div>';
+    }).join('')+'</div>';
+  }
+  function marksHtml(c){
+    var cells=[],i;
+    for(i=0;i<10;i++)cells.push({stat:0,mem:0,fecha:0,req:0,perk:0});
+    vis(c).forEach(function(m){
+      if(m.r>10||m.ev==='start')return;
+      cells[Math.max(1,Math.floor(m.r))-1][m.k]=1;
+    });
+    return '<div class="marks" aria-hidden="true">'+cells.map(function(x){
+      var t='';['stat','mem','fecha','req','perk'].forEach(function(k){if(x[k])t+='<i class="m-'+k+'"></i>';});
+      return '<span class="mk">'+t+'</span>';
+    }).join('')+'</div>';
+  }
+  function met(m){return m.k==='stat'&&(state.stats[m.s]||0)>=m.lv;}
+  function brief(m){
+    if(m.k==='stat')return statLabel(m)+' ('+STAT_NAMES[m.s][m.lv-1]+')'+(m.n?' · '+m.n:'');
+    if(m.k==='mem')return 'Request “'+m.name+'”';
+    return (m.d?fmtD(m.d)+' · ':'')+m.t;
+  }
+  function nextHtml(c,rank,done){
+    if(done)return '';
+    var ms=vis(c),nx=null,pk=null,i,m;
+    for(i=0;i<ms.length;i++){m=ms[i];if(m.k!=='perk'&&m.r<=10&&m.r>rank&&!(m.k==='stat'&&(m.opt||met(m)))){nx=m;break;}}
+    for(i=0;i<ms.length;i++){m=ms[i];if(m.k==='perk'&&m.r<=10&&m.r>rank){pk=m;break;}}
+    return (nx?'<div class="next"><b>Next</b>R'+nx.r+' · '+esc(brief(nx))+'</div>':'')+
+      (pk?'<div class="next"><b>Perk</b>R'+pk.r+' · '+esc(pk.name)+(pk.fx?' <em>— '+esc(pk.fx)+'</em>':'')+'</div>':'');
+  }
+  var EV={start:'Starts',unlock:'Unlock',deadline:'Deadline',lock:'Lock',rank:'Rank up'};
+  function msLine(m,c){
+    var r='<span class="r">'+(m.r>=99?'—':'R'+m.r)+'</span>',t,tx;
+    if(m.k==='perk'){
+      t='<span class="tag perk">Perk</span>';
+      tx='<b>'+esc(m.name)+'</b>'+(m.fx?' <em>— '+esc(m.fx)+'</em>':'')+((state.rank[c.id]||0)>=m.r?'<span class="ok">✓ unlocked</span>':'');
+    }else if(m.k==='stat'){
+      t='<span class="tag stat">Stat</span>';
+      tx='<b>'+m.s+' '+m.lv+'</b> · '+STAT_NAMES[m.s][m.lv-1]+(m.opt?' <em>(optional)</em>':'')+(m.n?' <em>— '+esc(m.n)+'</em>':'')+(met(m)?'<span class="ok">✓ already met</span>':'');
+    }else if(m.k==='mem'){
+      t='<span class="tag mem">Request</span>';
+      tx='<b>'+esc(m.name)+'</b> <em>— '+esc(m.given)+(m.need?' · leads to '+m.need:'')+(m.area?' · '+esc(m.area):'')+'</em>';
+    }else if(m.k==='fecha'){
+      t='<span class="tag ev-'+m.ev+'">'+EV[m.ev]+'</span>';
+      tx=(m.d?'<b>'+fmtD(m.d)+'</b> · ':'')+esc(m.t);
+    }else{
+      t='<span class="tag req">Other</span>';tx=esc(m.t);
+    }
+    return '<li>'+r+t+'<span class="tx">'+tx+'</span></li>';
+  }
+  function monthNote(c){
+    var s=monthState(c);
+    if(s.s==='later')return '<div class="next lt"><b>Not yet</b>Starts '+fmtD(s.d)+'</div>';
+    if(s.s==='over')return '<div class="next lt"><b>Ended</b>Last day: '+fmtD(s.d)+'</div>';
+    if(s.s==='starts')return '<div class="next lt"><b>This month</b>Starts '+fmtD(s.d)+'</div>';
+    return '';
+  }
+  function rowHtml(c){
+    var done=!!state.done[c.id],r=state.rank[c.id]||0,pips='';
+    for(var n=1;n<=10;n++){
+      pips+='<button type="button" class="pip'+(n<=r?' on':'')+'" role="radio" aria-checked="'+(n===r)+'" aria-label="Rank '+n+'" data-act="rank" data-id="'+c.id+'" data-r="'+n+'" data-k="r'+c.id+n+'">'+n+'</button>';
+    }
+    var ms=monthState(c).s;
+    return '<li class="row'+(done?' is-done':'')+((ms==='later'||ms==='over')?' later':'')+'">'+
+      '<button type="button" class="ck" data-act="toggle" data-id="'+c.id+'" data-k="c'+c.id+'" aria-pressed="'+done+'" aria-label="Completed: '+c.name+'">'+CHECK+'</button>'+
+      '<div class="who"><b>'+c.name+(c.rain?rainSvg(c.rain):'')+'</b><span>'+(c.n?c.n+' · ':'')+c.arc+'</span><small>'+esc(c.where)+'</small>'+monthNote(c)+nextHtml(c,r,done)+'</div>'+
+      (c.story?'<div class="trig">'+esc(c.trig)+'</div>':strip(c))+
+      '<div class="rank"><div class="pw"><div class="pips" role="radiogroup" aria-label="Rank for '+c.name+'">'+pips+'</div>'+marksHtml(c)+'</div><div class="read">'+r+'<small>/10</small></div></div>'+
+      '<details class="ms" data-id="'+c.id+'"'+(openRows[c.id]?' open':'')+'><summary data-k="s'+c.id+'">Milestones &amp; perks · '+vis(c).length+'</summary><ul>'+vis(c).map(function(m){return msLine(m,c);}).join('')+'</ul></details>'+
+      '</li>';
+  }
+  function renderRoster(){
+    function pick(list){
+      var out=[],nl=0,nm=0;
+      list.forEach(function(c){
+        if(hiddenC(c))nl++;
+        else if(state.hideMax&&state.rank[c.id]===10)nm++;
+        else out.push(c);
+      });
+      var t=[];
+      if(nm)t.push(nm+(nm===1?' maxed link hidden':' maxed links hidden'));
+      if(nl)t.push(nl+(nl===1?' link that appears later':' links that appear later')+' (spoilers)');
+      return out.map(rowHtml).join('')+(t.length?'<li class="row story-only"><span></span><div class="who"><small>'+t.join(' · ')+'</small></div></li>':'');
+    }
+    $roster.innerHTML=pick(C.filter(function(c){return !c.story;}));
+    $story.innerHTML=pick(C.filter(function(c){return c.story;}));
+  }
+
+  /* ---------- stats ---------- */
+  function renderSkills(){
+    $skills.innerHTML=STAT_KEYS.map(function(s){
+      var mine=state.stats[s]||0,pips='';
+      for(var n=1;n<=6;n++){
+        pips+='<button type="button" class="pip'+(n<=mine?' on':'')+'" role="radio" aria-checked="'+(n===mine)+'" aria-label="Level '+n+'" data-act="stat" data-s="'+s+'" data-lv="'+n+'" data-k="st'+s+n+'">'+n+'</button>';
+      }
+      var rows='';
+      for(var lv=1;lv<=6;lv++){
+        var ents=[];
+        C.forEach(function(c){if(hiddenC(c))return;c.ms.forEach(function(m){if(m.k==='stat'&&m.s===s&&m.lv===lv&&!spHidden(m,c))ents.push({c:c,m:m});});});
+        var ok=mine>=lv;
+        rows+='<div class="lv'+(ok?' met':'')+'"><div class="n">'+lv+'<small>'+STAT_NAMES[s][lv-1]+' · from '+STAT_PTS[s][lv-1]+' pts</small></div><div class="who2">'+
+          (ents.length?ents.map(function(e){
+            var dn=state.done[e.c.id];
+            return '<span class="ent'+(dn||ok?' dim':'')+(dn?' strike':'')+'">'+e.c.name+' <small>R'+e.m.r+'</small>'+(e.m.opt?' <i>optional</i>':'')+(e.m.n?' <i>'+esc(e.m.n)+'</i>':'')+'</span>';
+          }).join(''):(SP()?'<span class="nobody">None yet</span>':'<span class="nobody">No link requires it</span>'))+(ok?'<span class="ck2">✓ met</span>':'')+'</div></div>';
+      }
+      return '<div class="card"><h3>'+s+'</h3><div class="mine">Your level<div class="pips" role="radiogroup" aria-label="Your '+s+' level">'+pips+'</div></div>'+rows+'</div>';
+    }).join('');
+  }
+
+  /* ---------- how each link opens ---------- */
+  function renderMem(){
+    var list=C.filter(function(c){return !hiddenC(c);}).sort(function(a,b){return ord(startD(a))-ord(startD(b));});
+    var rows=list.map(function(c){
+      var reqs=[],dn=!!state.done[c.id],s=monthState(c).s;
+      c.ms.forEach(function(m){
+        if(m.r!==1||spHidden(m,c))return;
+        if(m.k==='stat')reqs.push('<span class="rq"><b>'+esc(m.s)+' '+m.lv+'</b> ('+esc(STAT_NAMES[m.s][m.lv-1])+')'+(m.n?' <i>· '+esc(m.n)+'</i>':'')+'</span>');
+        else if(m.k==='req')reqs.push('<span class="rq">'+esc(m.t)+'</span>');
+      });
+      var st=c.ms.filter(function(m){return m.ev==='start';})[0];
+      return '<tr'+(dn?' class="dim"':(s==='later'?' class="later"':''))+'><td class="cf">'+esc(c.name)+'<small>'+(c.n?c.n+' · ':'')+c.arc+'</small></td>'+
+        '<td class="dt2'+(dn?' strike':'')+'"><b>'+fmtD(startD(c))+'</b>'+(st&&st.t?'<small class="wn">'+esc(st.t)+'</small>':'')+'</td><td>'+(reqs.join('')||'—')+'</td></tr>';
+    }).join('');
+    $mem.innerHTML='<thead><tr><th>Link</th><th>From</th><th>Requirements &amp; notes</th></tr></thead><tbody>'+rows+'</tbody>';
+  }
+
+  /* ---------- dates ---------- */
+  function timelineItems(){
+    var items={};
+    C.forEach(function(c){if(hiddenC(c))return;c.ms.forEach(function(m){
+      if(m.k==='fecha'&&m.d&&m.ev!=='rank'&&!spHidden(m,c)){
+        var key=m.d+'|'+m.ev+'|'+m.t;
+        (items[key]=items[key]||{d:m.d,ev:m.ev,t:m.t,who:[]}).who.push(c);
+      }
+    });});
+    return Object.keys(items).map(function(k){return items[k];}).sort(function(a,b){return ord(a.d)-ord(b.d);});
+  }
+  function namesHtml(who){
+    return who.map(function(c){return '<span class="'+(state.done[c.id]?'dim strike':'')+'">'+c.name+'</span>';}).join(', ');
+  }
+  function renderTimeline(){
+    var list=timelineItems();
+    var html='',cur=0;
+    list.forEach(function(it){
+      var mo=parseD(it.d).m;
+      if(mo!==cur){
+        if(cur)html+='</ol></li>';
+        cur=mo;html+='<li><h3'+(mo===state.month?' class="cur"':'')+'>'+MONTHS[mo]+' '+yearOf(mo)+'</h3><ol class="tl">';
+      }
+      var names=namesHtml(it.who);
+      var allDone=it.who.every(function(c){return state.done[c.id];});
+      html+='<li class="ti'+(allDone?' dim':'')+'"><span class="dt">'+fmtD(it.d)+'</span><span><span class="tag ev-'+it.ev+'">'+EV[it.ev]+'</span></span><span class="tx"><b>'+names+'</b> · '+esc(it.t)+'</span></li>';
+    });
+    if(cur)html+='</ol></li>';
+    $tl.innerHTML=html;
+  }
+
+  /* ---------- game month ---------- */
+  function renderMonthBar(){
+    var h='';
+    MORDER.forEach(function(m){
+      h+='<button type="button" class="mb" role="radio" aria-checked="'+(state.month===m)+'" data-act="month" data-m="'+m+'" data-k="m'+m+'">'+MABBR[m]+'</button>';
+    });
+    h+='<button type="button" class="mb all" role="radio" aria-checked="'+(!state.month)+'" data-act="month" data-m="0" data-k="m0">All</button>';
+    $mrow.innerHTML=h;
+    $mlbl.innerHTML='Game month'+(state.month?'<b>'+MONTHS[state.month]+' '+yearOf(state.month)+'</b>':'<b>Whole year</b>');
+  }
+  function evLine(x){
+    return '<li><span class="d">'+fmtD(x.d)+'</span><span class="tag ev-'+x.ev+'">'+EV[x.ev]+'</span><span><b>'+namesHtml(x.who)+'</b> · '+esc(x.t)+'</span></li>';
+  }
+  function renderMes(){
+    var mo=state.month;
+    if(!mo){$mes.hidden=true;$mes.innerHTML='';return;}
+    var a=ord(mo+'/1'),b=ord(mo+'/31'),items=timelineItems();
+    var here=items.filter(function(x){var o=ord(x.d);return o>=a&&o<=b;});
+    var soon=items.filter(function(x){var o=ord(x.d);return x.ev==='deadline'&&o>b&&o<=b+250;});
+    var later=C.filter(function(c){return monthState(c).s==='later';}).sort(function(x,y){return ord(startD(x))-ord(startD(y));});
+    var over=C.filter(function(c){return monthState(c).s==='over';}).sort(function(x,y){return ord(x.end)-ord(y.end);});
+    var html='<div><h3>Dates in '+MONTHS[mo]+' '+yearOf(mo)+'</h3>'+(here.length?'<ul>'+here.map(evLine).join('')+'</ul>':'<p class="none">No notable dates this month.</p>')+'</div>';
+    html+='<div><h3>Not available yet</h3>'+(SP()?'<p class="none">Hidden: Hide spoilers is on.</p>':later.length?'<ul>'+later.map(function(c){
+      return '<li class="'+(state.done[c.id]?'dim':'')+'"><span class="d">'+fmtD(startD(c))+'</span><span><b>'+c.name+'</b> · starts</span></li>';}).join('')+'</ul>':'<p class="none">All links are already available.</p>')+'</div>';
+    html+='<div><h3>Upcoming deadlines</h3>'+(soon.length?'<ul>'+soon.map(evLine).join('')+'</ul>':'<p class="none">No deadlines in the coming months.</p>')+'</div>';
+    if(over.length)html+='<div><h3>Already ended</h3><ul>'+over.map(function(c){
+      return '<li class="'+(state.done[c.id]?'dim':'')+'"><span class="d">'+fmtD(c.end)+'</span><span><b>'+c.name+'</b> · last day</span></li>';}).join('')+'</ul></div>';
+    $mes.innerHTML=html;$mes.hidden=false;
+  }
+
+  function renderMeter(){
+    var d=C.filter(function(c){return state.done[c.id];}).length;
+    var sum=C.reduce(function(a,c){return a+(state.rank[c.id]||0);},0);
+    var max=C.length*10;
+    $meter.innerHTML=
+      '<div class="kpi"><div class="lbl">Completed</div><div class="num">'+d+'<small>/'+C.length+'</small></div><div class="bar"><i style="width:'+(d/C.length*100)+'%"></i></div></div>'+
+      '<div class="kpi"><div class="lbl">Total ranks</div><div class="num">'+sum+'<small>/'+max+'</small></div><div class="bar"><i style="width:'+(sum/max*100)+'%"></i></div></div>';
+  }
+  function render(){
+    var a=document.activeElement,k=a&&a.getAttribute?a.getAttribute('data-k'):null;
+    renderMonthBar();renderMes();renderWeek();renderRoster();renderSkills();renderMem();renderTimeline();renderMeter();
+    $hide.setAttribute('aria-checked',String(state.hide));
+    applyCol();
+    $hideMax.setAttribute('aria-checked',String(state.hideMax));
+    $spoil.setAttribute('aria-checked',String(state.spoil));
+    $spHint.hidden=!state.spoil;
+    $spHint.textContent=state.month?'Hiding everything after '+MONTHS[state.month]+' '+yearOf(state.month)+': links that haven\u2019t started yet, later dates and ranks, and plot notes.':'Pick a game month above to hide what comes after it.';
+    Array.prototype.forEach.call(document.querySelectorAll('[data-sp]'),function(n){n.style.display=SP()?'none':'';});
+    if(k){var el=document.querySelector('[data-k="'+k+'"]');if(el&&el!==document.activeElement)el.focus({preventScroll:true});}
+  }
+
+  /* ---------- persistence ---------- */
+  var dbDoc=null,dirty=false,timer=null,chain=Promise.resolve(),STATUS={
+    local:'Saved in this browser',saving:'Saving…',saved:'Saved',error:'Couldn\u2019t save; kept in this browser'};
+  function setStatus(s){$status.textContent=STATUS[s]||'';}
+  function changed(){
+    saveLocal();
+    if(!dbDoc){setStatus('local');return;}
+    dirty=true;setStatus('saving');
+    clearTimeout(timer);
+    timer=setTimeout(function(){chain=chain.then(flush);},400);
+  }
+  function flush(){
+    if(!dbDoc||!dirty)return Promise.resolve();
+    dirty=false;
+    return dbDoc.set(JSON.parse(JSON.stringify(snapshot()))).then(function(){
+      setStatus(dirty?'saving':'saved');
+    },function(){dirty=true;setStatus('error');});
+  }
+  function sameState(c){return JSON.stringify(c)===JSON.stringify(snapshot());}
+  /* ---------- collapsible sections ---------- */
+  var SECS=[];
+  function initSections(){
+    Array.prototype.forEach.call(document.querySelectorAll('section[id]'),function(sec){
+      if(sec.id==='semana')return;
+      var h=sec.querySelector('h2');if(!h)return;
+      var body=document.createElement('div');body.className='secb';body.id='b-'+sec.id;
+      while(h.nextSibling)body.appendChild(h.nextSibling);
+      sec.appendChild(body);
+      var btn=document.createElement('button');btn.type='button';btn.className='sech';
+      btn.setAttribute('data-act','sec');btn.setAttribute('data-sec',sec.id);btn.setAttribute('aria-controls',body.id);
+      btn.innerHTML='<span>'+h.innerHTML+'</span><i class="chev" aria-hidden="true"></i>';
+      h.textContent='';h.appendChild(btn);
+      SECS.push(sec.id);
+    });
+  }
+  function applyCol(){
+    var anyOpen=false;
+    SECS.forEach(function(id){
+      var c=!!state.col[id],b=document.getElementById('b-'+id),t=document.querySelector('[data-sec="'+id+'"]');
+      if(b)b.hidden=c;
+      if(t)t.setAttribute('aria-expanded',String(!c));
+      if(!c)anyOpen=true;
+    });
+    var ca=document.getElementById('colAllBtn');
+    if(ca)ca.textContent=anyOpen?'Collapse all':'Expand all';
+  }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest?e.target.closest('.jump a'):null;if(!a)return;
+    var id=(a.getAttribute('href')||'').slice(1);
+    if(state.col[id]){delete state.col[id];saveLocal();applyCol();}
+  });
+
+  /* ---------- events ---------- */
+  var resetArmed=false,resetTimer=null;
+  function disarm(){resetArmed=false;clearTimeout(resetTimer);$reset.classList.remove('warn');$reset.textContent='Reset all';}
+  document.addEventListener('toggle',function(e){
+    var t=e.target;
+    if(t&&t.classList&&t.classList.contains('ms')){openRows[t.getAttribute('data-id')]=t.open;}
+  },true);
+  document.addEventListener('click',function(e){
+    var t=e.target.closest?e.target.closest('button'):null;if(!t)return;
+    var act=t.getAttribute('data-act'),id=t.getAttribute('data-id');
+    if(act==='toggle'&&ids[id]){
+      if(state.done[id])delete state.done[id];else state.done[id]=true;
+      changed();render();
+    }else if(act==='rank'&&ids[id]){
+      var n=parseInt(t.getAttribute('data-r'),10);
+      if(state.rank[id]===n)delete state.rank[id];else state.rank[id]=n;
+      if(n===10&&state.rank[id]===10)state.done[id]=true;
+      changed();render();
+    }else if(act==='stat'){
+      var s=t.getAttribute('data-s'),lv=parseInt(t.getAttribute('data-lv'),10);
+      if(STAT_NAMES[s]){if(state.stats[s]===lv)delete state.stats[s];else state.stats[s]=lv;changed();render();}
+    }else if(act==='month'){
+      var mm=parseInt(t.getAttribute('data-m'),10);
+      state.month=(mm>=1&&mm<=12&&state.month!==mm)?mm:0;
+      changed();render();
+    }else if(t===$hide){
+      state.hide=!state.hide;saveLocal();render();
+    }else if(act==='sec'){
+      var sid=t.getAttribute('data-sec');
+      if(state.col[sid])delete state.col[sid];else state.col[sid]=true;
+      saveLocal();applyCol();
+    }else if(t.id==='colAllBtn'){
+      var anyOpen=SECS.some(function(x){return !state.col[x];});
+      SECS.forEach(function(x){if(anyOpen)state.col[x]=true;else delete state.col[x];});
+      saveLocal();applyCol();
+    }else if(t===$hideMax){
+      state.hideMax=!state.hideMax;saveLocal();render();
+    }else if(t===$spoil){
+      state.spoil=!state.spoil;saveLocal();render();
+    }else if(t===$reset){
+      if(!resetArmed){resetArmed=true;$reset.classList.add('warn');$reset.textContent='Sure? Click again';resetTimer=setTimeout(disarm,4000);}
+      else{disarm();state.done={};state.rank={};state.stats={};state.month=0;changed();render();}
+    }
+    if(t!==$reset&&resetArmed)disarm();
+  });
+
+  initSections();loadLocal();render();setStatus('local');
+})();
+</script>
+</body>
+</html>

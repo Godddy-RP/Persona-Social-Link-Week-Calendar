@@ -1,0 +1,1111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Persona 5 Royal Confidants Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Big+Shoulders+Display:wght@800;900&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --ink:#0d0b0c;
+  --panel:#171416;
+  --panel-2:#221d20;
+  --line:#3a3034;
+  --red:#e4001b;
+  --red-hi:#ff3148;
+  --paper:#f4eeee;
+  --paper-2:#d9cfd0;
+  --muted:#a99da0;
+  --off:#2b2528;
+  --f-display:'Big Shoulders Display','Impact','Arial Narrow',sans-serif;
+  --f-ui:'Barlow Condensed','Arial Narrow',sans-serif;
+  --f-body:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--ink);color:var(--paper);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.app{max-width:1360px;margin:0 auto;padding-inline:16px;padding-block:24px 56px}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+button:focus-visible{outline:3px solid var(--red-hi);outline-offset:2px}
+h1,h2{margin:0;font-family:var(--f-display);font-weight:900;text-transform:uppercase;text-wrap:balance}
+
+/* ---------- header ---------- */
+.top{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:flex-end;justify-content:space-between;margin-bottom:28px}
+.kicker{display:block;font-family:var(--f-ui);font-weight:600;font-size:14px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+h1{font-size:clamp(46px,9vw,88px);line-height:.92}
+h1 span{display:inline-block;background:var(--red);color:#fff;padding:.04em .26em .02em .2em;transform:skewX(-9deg);box-shadow:6px 6px 0 #000,7px 7px 0 var(--line)}
+.meter{display:flex;flex-wrap:wrap;gap:18px 32px}
+.kpi{min-width:150px}
+.kpi .lbl{font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.kpi .num{font-family:var(--f-display);font-weight:900;font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .num small{font-size:24px;color:var(--muted);font-weight:800}
+.bar{height:8px;background:var(--off);margin-top:8px;clip-path:polygon(0 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.bar i{display:block;height:100%;background:var(--red);width:0;transition:width .25s ease}
+
+.tools{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-bottom:22px}
+.btn{font-family:var(--f-ui);font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border:2px solid var(--paper-2);color:var(--paper);display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:var(--red-hi);color:#fff}
+.btn[aria-checked="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.btn.warn{border-color:var(--red);background:var(--red);color:#fff}
+.sw{width:14px;height:14px;border:2px solid currentColor;display:inline-block;position:relative}
+.btn[aria-checked="true"] .sw::after{content:"";position:absolute;inset:1px;background:currentColor}
+.status{font-family:var(--f-ui);font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-left:auto}
+.hint{margin:0 0 16px;color:var(--muted);max-width:68ch}
+
+h2{font-size:30px;letter-spacing:.02em;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+h2::before{content:"";width:14px;height:28px;background:var(--red);transform:skewX(-14deg);flex:none}
+section{margin-bottom:44px}
+
+/* ---------- week ---------- */
+.week{display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
+.day{display:grid;grid-template-columns:96px minmax(0,1fr) minmax(0,1fr);gap:0;align-items:stretch}
+.dh{background:var(--red);color:#fff;padding:10px 14px;display:flex;flex-direction:column;justify-content:center;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+.dh b{font-family:var(--f-display);font-weight:900;font-size:36px;line-height:1;letter-spacing:.02em}
+.dh span{font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;opacity:.9}
+.slot{padding:10px 10px 12px;min-width:0}
+.slot.d{background:var(--paper);color:var(--ink);--focus:var(--red)}
+.slot.n{background:var(--panel);border:1px solid var(--line);--focus:#fff}
+.slot button:focus-visible{outline-color:var(--focus)}
+.sh{display:flex;align-items:center;gap:7px;font-family:var(--f-ui);font-weight:700;font-size:13px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+.sh svg{flex:none}
+.sh em{font-style:normal;margin-left:auto;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.slot.d .sh{color:#5a4d50}
+.slot.n .sh{color:var(--muted)}
+.chips{display:flex;flex-direction:column;gap:5px}
+.empty{margin:4px 0;font-family:var(--f-ui);font-size:14px;letter-spacing:.1em;text-transform:uppercase;opacity:.6}
+
+.chip{display:grid;grid-template-columns:2.1em minmax(0,1fr) auto;align-items:center;gap:6px;width:100%;text-align:left;padding:6px 8px;box-shadow:3px 3px 0 rgba(0,0,0,.55);transition:transform .08s ease,background-color .12s ease}
+.chip:hover{transform:translate(-1px,-1px)}
+.chip .cn{font-family:var(--f-ui);font-weight:600;font-size:12px;letter-spacing:.04em;opacity:.7}
+.chip .nm{font-family:var(--f-ui);font-weight:700;font-size:18px;line-height:1.1;letter-spacing:.03em;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip .nm i{font-style:normal;color:#ffd7db;margin-left:2px}
+.chip .rp{font-family:var(--f-ui);font-weight:700;font-size:13px;min-width:30px;text-align:center;padding:1px 6px;font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;justify-content:center;height:20px}
+.slot.d .chip{background:var(--ink);color:var(--paper)}
+.slot.d .chip:hover{background:var(--red);color:#fff}
+.slot.d .chip .rp{background:var(--red);color:#fff}
+.slot.d .chip:hover .rp{background:var(--ink)}
+.slot.n .chip{background:var(--red);color:#fff}
+.slot.n .chip:hover{background:var(--red-hi)}
+.slot.n .chip .rp{background:var(--ink);color:#fff}
+.slot.d .chip.is-done{background:#d5cbcc;color:#7f7275;box-shadow:none}
+.slot.d .chip.is-done .rp{background:#7f7275;color:#fff}
+.slot.n .chip.is-done{background:var(--panel-2);color:var(--muted);box-shadow:none}
+.slot.n .chip.is-done .rp{background:var(--off);color:var(--paper-2)}
+.chip.is-done .nm{text-decoration:line-through;text-decoration-thickness:2px}
+
+@media (max-width:719px){
+  .day{grid-template-columns:minmax(0,1fr)}
+  .dh{flex-direction:row;align-items:baseline;justify-content:flex-start;gap:12px;clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+  .dh b{font-size:30px}
+}
+@media (min-width:1100px){
+  .week{grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:auto auto auto;column-gap:8px;row-gap:8px}
+  .day{grid-template-columns:minmax(0,1fr);grid-row:span 3;grid-template-rows:subgrid;row-gap:normal}
+  .dh{clip-path:polygon(0 0,100% 0,100% 100%,0 100%);padding:10px 12px}
+  .chip{grid-template-columns:minmax(0,1fr) auto;padding:6px 6px 6px 8px}
+  .chip .cn{display:none}
+  .chip .nm{font-size:17px}
+  .chip .rp{min-width:26px;padding:1px 4px}
+}
+
+/* ---------- roster ---------- */
+.roster{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:34px minmax(0,1.2fr) auto auto;gap:10px 22px;align-items:center;padding:12px 10px;border-bottom:1px solid var(--line);background:var(--panel)}
+.row:nth-child(even){background:#1b1719}
+.row.is-done .who b{text-decoration:line-through;text-decoration-thickness:2px;color:var(--muted)}
+.ck{width:32px;height:32px;border:2px solid var(--paper-2);display:grid;place-items:center;color:transparent}
+.ck:hover{border-color:var(--red-hi)}
+.row.is-done .ck{background:var(--red);border-color:var(--red);color:#fff}
+.who{min-width:0}
+.who b{display:block;font-family:var(--f-ui);font-weight:700;font-size:24px;line-height:1.05;letter-spacing:.03em;text-transform:uppercase}
+.who span{display:block;font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--red-hi)}
+.who small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.strip{display:flex;gap:3px}
+.md{display:grid;gap:2px;justify-items:center;font-family:var(--f-ui);font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.04em}
+.sq{width:17px;height:9px;background:var(--off)}
+.sq.on{background:var(--red)}
+.sq.maybe{background:repeating-linear-gradient(135deg,var(--red) 0 2px,var(--off) 2px 4px)}
+.rank{display:flex;align-items:center;gap:12px}
+.pw{display:grid}
+.pips{display:flex;gap:3px}
+.pip{width:24px;height:32px;background:var(--off);color:var(--muted);font-family:var(--f-ui);font-weight:700;font-size:13px;transform:skewX(-10deg);font-variant-numeric:tabular-nums}
+.pip:hover{background:#4a3f43;color:#fff}
+.pip.on{background:var(--red);color:#fff}
+.pip.on:hover{background:var(--red-hi)}
+.pip[aria-checked="true"]{background:var(--paper);color:var(--ink)}
+.read{font-family:var(--f-display);font-weight:800;font-size:26px;min-width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--paper)}
+.read small{font-size:15px;color:var(--muted)}
+@media (max-width:959px){
+  .row{grid-template-columns:34px minmax(0,1fr);}
+  .strip,.rank{grid-column:1 / -1}
+  .strip{padding-left:44px}
+  .rank{padding-left:44px;flex-wrap:wrap}
+}
+
+/* ---------- notes ---------- */
+.notes{margin:0;padding:0;list-style:none;display:grid;gap:10px;max-width:78ch}
+.notes li{padding-left:20px;position:relative;color:var(--paper-2)}
+.notes li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:9px;background:var(--red);transform:skewX(-14deg)}
+.notes b{color:#fff;font-weight:600}
+
+/* ---------- milestones ---------- */
+.jump{display:flex;flex-wrap:wrap;gap:8px 20px;margin:-8px 0 26px}
+.jump a{font-family:var(--f-ui);font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--paper-2);text-decoration:none;border-bottom:2px solid var(--red);padding-bottom:2px}
+.jump a:hover{color:#fff;border-color:var(--red-hi)}
+.jump a:focus-visible{outline:3px solid var(--red-hi);outline-offset:3px}
+.sech{display:flex;align-items:center;gap:12px;flex:1;text-align:left;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit}
+.sech .chev{margin-left:auto;flex:none;width:11px;height:11px;border-right:3px solid var(--muted);border-bottom:3px solid var(--muted);transform:rotate(45deg) translate(-3px,-3px);transition:transform .15s}
+.sech[aria-expanded="false"] .chev{transform:rotate(-45deg)}
+.sech:hover .chev{border-color:var(--paper)}
+.colall{font-family:var(--f-ui);font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-left:auto}
+.colall:hover{color:var(--paper)}
+@media (prefers-reduced-motion:reduce){.sech .chev{transition:none}}
+.legend{margin:0 0 14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:14px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.tag{font-family:var(--f-ui);font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;display:inline-block;line-height:1.35;white-space:nowrap}
+.tag.stat{background:var(--paper);color:var(--ink)}
+.tag.mem{background:var(--red);color:#fff}
+.tag.fecha{border:1.5px solid var(--paper-2);color:var(--paper);padding:0 6px}
+.tag.req{background:var(--off);color:var(--paper-2)}
+.tag.ev-start{background:var(--paper);color:var(--ink)}
+.tag.ev-unlock{border:1.5px solid var(--paper-2);color:var(--paper);padding:0 6px}
+.tag.ev-deadline{background:var(--red);color:#fff}
+.tag.ev-lock{background:var(--off);color:var(--paper-2)}
+.marks{display:flex;gap:3px;margin-top:5px;height:8px}
+.mk{width:24px;display:flex;gap:2px;justify-content:center;align-items:center}
+.mk i{display:block;width:6px;height:6px;transform:skewX(-10deg)}
+.mk .m-stat{background:var(--paper)}
+.mk .m-mem{background:var(--red-hi)}
+.mk .m-fecha{border:1.5px solid var(--paper-2)}
+.mk .m-req{background:var(--muted)}
+.who .next{display:block;text-transform:none;letter-spacing:0;font-family:var(--f-body);font-weight:400;font-size:13px;color:var(--paper-2);margin-top:5px}
+.who .next b{display:inline;font-size:12px;line-height:1.4;font-family:var(--f-ui);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.ms{grid-column:1 / -1}
+.ms summary{cursor:pointer;font-family:var(--f-ui);font-weight:700;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--paper-2);list-style:none;display:inline-flex;align-items:center;gap:8px;padding:4px 0}
+.ms summary::-webkit-details-marker{display:none}
+.ms summary::before{content:"+";display:inline-grid;place-items:center;width:18px;height:18px;border:2px solid var(--paper-2);font-size:14px;line-height:1}
+.ms[open] summary::before{content:"–"}
+.ms summary:focus-visible{outline:3px solid var(--red-hi);outline-offset:2px}
+.ms ul{list-style:none;margin:8px 0 2px;padding:0;display:grid;gap:7px}
+.ms li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.ms .r{font-family:var(--f-ui);font-weight:700;font-size:15px;min-width:40px;color:var(--red-hi);font-variant-numeric:tabular-nums}
+.ms .tx{flex:1 1 260px;min-width:0;color:var(--paper-2)}
+.ms .tx b{color:#fff;font-weight:600}
+.ms .tx em{font-style:normal;color:var(--muted)}
+.ms .ok{color:#fff;font-family:var(--f-ui);font-weight:700;letter-spacing:.06em;margin-left:6px}
+.dim{opacity:.45}
+.strike{text-decoration:line-through}
+
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);padding:14px 14px 12px}
+.card h3{margin:0 0 4px;font-family:var(--f-display);font-weight:900;font-size:26px;letter-spacing:.03em;text-transform:uppercase}
+.mine{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.mine .pips{gap:3px}
+.mine .pip{width:26px;height:26px;font-size:13px}
+.lv{display:grid;grid-template-columns:108px minmax(0,1fr);gap:4px 10px;padding:8px 0;border-top:1px solid var(--line)}
+.lv .n{font-family:var(--f-display);font-weight:900;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.lv .n small{display:block;font-family:var(--f-ui);font-weight:600;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.lv.met .n{color:var(--muted)}
+.lv .who2{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.ent{font-family:var(--f-ui);font-weight:700;font-size:16px;letter-spacing:.03em;text-transform:uppercase}
+.ent small{font-weight:600;font-size:13px;color:var(--red-hi);letter-spacing:.06em}
+.ent i{font-style:normal;font-family:var(--f-body);text-transform:none;font-weight:400;font-size:12px;color:var(--muted);letter-spacing:0}
+.ck2{color:var(--paper);font-family:var(--f-ui);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+
+.scroll{overflow-x:auto;border-top:1px solid var(--line)}
+.tbl{width:100%;min-width:760px;border-collapse:collapse}
+.tbl th{font-family:var(--f-ui);font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;background:var(--panel)}
+.tbl tr:nth-child(even) td{background:#1b1719}
+.tbl .cf{font-family:var(--f-ui);font-weight:700;font-size:18px;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
+.tbl .cf small{display:block;font-size:12px;font-weight:600;letter-spacing:.14em;color:var(--red-hi)}
+.tbl .mn{font-weight:600;color:#fff}
+.tbl .rr{font-family:var(--f-display);font-weight:800;font-size:22px;white-space:nowrap}
+.tbl tr.grp td{background:var(--ink)!important;font-family:var(--f-ui);font-weight:700;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--red-hi);padding:14px 12px 8px}
+.tbl .dt{font-family:var(--f-display);font-weight:800;font-size:20px;letter-spacing:.02em;white-space:nowrap}
+.tbl .wn{display:block;font-size:14px;color:var(--muted);margin-top:2px}
+.tbl td .rr{font-size:16px;margin-right:4px;color:var(--red-hi)}
+.memtools{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:0 0 14px}
+.memcount{font-family:var(--f-ui);font-weight:700;font-size:16px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.memcount b{font-family:var(--f-display);font-size:26px;color:var(--paper);margin-right:2px}
+.tbl td.ckc{width:52px;padding-right:0}
+.tbl tr.is-done .ck{background:var(--red);border-color:var(--red);color:#fff}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.tl{list-style:none;margin:0;padding:0}
+.tl h3{margin:22px 0 4px;font-family:var(--f-display);font-weight:800;font-size:22px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px}
+.tl h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.ti{display:grid;grid-template-columns:96px 112px minmax(0,1fr);gap:4px 12px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line)}
+.ti .dt{white-space:nowrap;font-family:var(--f-display);font-weight:900;font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.ti .tx{color:var(--paper-2)}
+.ti .tx b{color:#fff;font-weight:600}
+@media (max-width:640px){
+  .ti{grid-template-columns:96px minmax(0,1fr)}
+  .ti .tx{grid-column:1 / -1}
+}
+
+/* ---------- game month ---------- */
+.monthbar{margin:0 0 22px;display:grid;gap:8px}
+.monthbar .lbl{font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.monthbar .lbl b{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.04em;color:var(--paper)}
+.mrow{display:flex;flex-wrap:wrap;gap:4px}
+.mb{min-width:54px;height:38px;padding:0 12px;background:var(--off);color:var(--paper-2);font-family:var(--f-ui);font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;transform:skewX(-10deg)}
+.mb:hover{background:#4a3f43;color:#fff}
+.mb[aria-checked="true"]{background:var(--paper);color:var(--ink)}
+.mb.all[aria-checked="true"]{background:var(--red);color:#fff}
+.mb small{font-size:10px;letter-spacing:.06em;opacity:.7;margin-left:3px}
+.mespanel{margin:22px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.mespanel h3{margin:0 0 8px;font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.05em;text-transform:uppercase}
+.mespanel ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.mespanel li{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline;color:var(--paper-2)}
+.mespanel li b{color:#fff;font-weight:600}
+.mespanel .d{font-family:var(--f-display);font-weight:900;font-size:20px;color:#fff;min-width:44px;font-variant-numeric:tabular-nums}
+.mespanel .none{color:var(--muted);margin:0}
+.mespanel .warn{grid-column:1 / -1;margin:0;color:var(--paper-2);font-size:14px}
+.row.later{opacity:.55}
+.who .next.lt b{color:var(--red-hi)}
+.tbl tr.later td{opacity:.55}
+.tl h3.cur{color:var(--paper)}
+.tl h3.cur::before{content:"";width:12px;height:22px;background:var(--red);transform:skewX(-14deg)}
+.wnote{margin:12px 0 0;color:var(--muted);font-size:14px}
+
+/* ---------- perks, rain, story ---------- */
+.tag.perk{border:1.5px solid var(--red-hi);color:var(--red-hi);padding:0 6px}
+.tag.ev-rank{border:1.5px solid var(--paper-2);color:var(--paper);padding:0 6px}
+.mk .m-perk{border:1.5px solid var(--red-hi);background:transparent}
+.marks{height:auto;min-height:8px}
+.mk{flex-wrap:wrap;align-content:flex-start;gap:2px}
+.rain{flex:none;vertical-align:-2px;margin-left:6px;width:15px;height:15px}
+.chip .nm .rain{margin-left:5px;width:13px;height:13px;vertical-align:-1px}
+.legend .rain{margin:0;vertical-align:middle}
+.sub{margin:34px 0 6px;font-family:var(--f-display);font-weight:800;font-size:24px;letter-spacing:.06em;text-transform:uppercase;color:var(--paper);display:flex;align-items:center;gap:12px}
+.sub::after{content:"";flex:1;height:1px;background:var(--line)}
+.trig{max-width:210px;font-family:var(--f-ui);font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);line-height:1.3}
+.who .next em{font-style:normal;color:var(--muted)}
+.row.story-only{grid-template-columns:34px minmax(0,1fr)}
+.row.story-only .who small{max-width:70ch}
+@media (max-width:959px){
+  .trig{grid-column:1 / -1;padding-left:44px;max-width:none}
+}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <span class="kicker">Persona 5 Royal · Weekly availability</span>
+      <h1><span>Confidants</span></h1>
+    </div>
+    <div class="meter" id="meter" aria-live="polite"></div>
+  </header>
+
+  <div class="monthbar" role="radiogroup" aria-label="Game month">
+    <div class="lbl" id="monthLbl"></div>
+    <div class="mrow" id="monthRow"></div>
+  </div>
+
+  <div class="tools">
+    <button type="button" class="btn" id="hideBtn" role="switch" aria-checked="false"><span class="sw"></span>Hide completed</button>
+    <button type="button" class="btn" id="hideMaxBtn" role="switch" aria-checked="false"><span class="sw"></span>Hide maxed</button>
+    <button type="button" class="btn" id="spoilBtn" role="switch" aria-checked="false"><span class="sw"></span>Hide spoilers</button>
+    <button type="button" class="btn" id="resetBtn">Reset all</button>
+    <span class="status" id="status" role="status" aria-live="polite"></span>
+  </div>
+  <p class="hint" id="spoilHint" hidden style="margin-top:-8px"></p>
+
+  <nav class="jump" aria-label="Sections">
+    <a href="#semana">Week</a><a href="#rangos">Ranks</a><a href="#skills">Social Stats</a><a href="#mementos">Mementos</a><a href="#fechas">Locks &amp; Dates</a><a href="#notas">Notes</a>
+    <button type="button" class="colall" id="colAllBtn">Collapse all</button>
+  </nav>
+
+  <section id="semana" aria-labelledby="hSemana">
+    <h2 id="hSemana">Week</h2>
+    <p class="hint">Click or tap a confidant to mark them as completed. Set their rank in the list below; reaching rank 10 marks them automatically.</p>
+    <div class="week" id="week"></div>
+    <p class="wnote">* only some months · • starts this month (the date is in the panel below and in Milestones) · <span id="rainKey"></span> available on rainy days</p>
+    <div class="mespanel" id="mesBox" hidden></div>
+  </section>
+
+  <section id="rangos" aria-labelledby="hRangos">
+    <h2 id="hRangos">Ranks</h2>
+    <p class="legend">Below each rank:
+      <span><i class="tag stat">Stat</i> social stat level required</span>
+      <span><i class="tag mem">Mementos</i> request you receive</span>
+      <span><i class="tag fecha">Date</i> lock, unlock or deadline</span>
+      <span><i class="tag req">Other</i> money, Palace, job</span>
+      <span><i class="tag perk">Perk</i> bonus you unlock</span>
+      <span id="rainLegend"></span>
+    </p>
+    <ol class="roster" id="roster"></ol>
+    <h3 class="sub">Story Confidants</h3>
+    <p class="hint">They don’t appear in the weekly grid: they rank up with the story or in the Velvet Room. Under each one is the date on which each rank is reached.</p>
+    <ol class="roster" id="story"></ol>
+  </section>
+
+  <section id="skills" aria-labelledby="hSkills">
+    <h2 id="hSkills">Social Stats</h2>
+    <p class="hint">Which level of each stat you need, and for which confidant. Set your current level and the requirements you already meet are dimmed.</p>
+    <div class="skills" id="skillsBox"></div>
+  </section>
+
+  <section id="mementos" aria-labelledby="hMem">
+    <h2 id="hMem">Mementos Requests</h2>
+    <p class="hint">The 33 Mementos requests in Royal, with the date each one unlocks. Mark the ones you’ve done and choose how to view them. The first ones have a fixed date; the ones further down open when you rank up a confidant, so they have no date of their own. “Needed for” shows which confidant rank needs that request. “R7.1” is the event that happens right after rank 7.</p>
+    <div class="memtools">
+      <span class="memcount" id="memCount" aria-live="polite"></span>
+      <div class="mrow" role="radiogroup" aria-label="Request order">
+        <button type="button" class="mb" role="radio" aria-checked="true" data-act="memsort" data-v="date">By date</button>
+        <button type="button" class="mb" role="radio" aria-checked="false" data-act="memsort" data-v="status">Pending and completed</button>
+      </div>
+      <button type="button" class="btn" id="memHideBtn" role="switch" aria-checked="false"><span class="sw"></span>Hide completed</button>
+    </div>
+    <div class="scroll"><table class="tbl" id="memBox"></table></div>
+  </section>
+
+  <section id="fechas" aria-labelledby="hFechas">
+    <h2 id="hFechas">Locks &amp; Dates</h2>
+    <p class="hint">When each confidant starts, when ranks unlock, and which deadlines you have.</p>
+    <ol class="tl" id="tlBox"></ol>
+  </section>
+
+  <section id="notas" aria-labelledby="hNotas">
+    <h2 id="hNotas">Notes</h2>
+    <ul class="notes">
+      <li><b>Weather.</b> The grid applies to a normal day. The rain icon marks who can be seen when it rains (Ann, Yusuke, Akechi, Iwai, Ohya, Togo and Mishima); Iwai, Togo and Ohya even show up on days that aren’t their usual days. Haru, Futaba, Chihaya and Yoshida don’t appear when it rains. No clear data was found for Ryuji, Makoto, Takemi, Kawakami, Sojiro, Oda, Maruki and Kasumi, so they have no icon.</li>
+      <li data-sp><b>Kasumi *.</b> Wednesdays all year; Thursdays and Sundays only sometimes in July, August and December.</li>
+      <li data-sp><b>Maruki.</b> Until Sep 20, only Mon, Tue, Wed and Fri. The Megami Tensei Wiki adds Thursdays from that date; Prima Games doesn’t.</li>
+      <li><b>Mishima.</b> He doesn’t appear for 2 or 3 days after each rank up (sources differ).</li>
+      <li data-sp><b>Third Semester.</b> Reaching Maruki rank 9 before Nov 17 unlocks it. That is when rank 11 (Third Awakening) becomes available for Ann, Makoto, Yusuke, Futaba, Haru and Ryuji, along with ranks 6 and up for Kasumi.</li>
+      <li><b>Uncertain data.</b> Haru: Prima Games and a spreadsheet require Proficiency 5 at R2, while GameFAQs places it at R4. Kawakami: Guts 3 at R1 is listed only on GameFAQs. Akechi R8: one guide says until Nov 20, the rest say Nov 17. The area of each Mementos request comes from Ludo. Perks: Igor has Third Eye at R2 according to Samurai Gamers and at R3 according to GameFAQs; Ryuji’s Insta-kill is listed at R7 in one guide and at R8 in another; the rank for Ryuji (Stealth Dash), Akechi (Sleuthing Mastery), Oda (Warning Shot) and Chihaya comes from a single guide; Akechi also has Follow Up and Smooth Talk listed with no rank. Sae: the R10 perk True Justice has no description in the source. Mementos: one guide puts the requests after Futaba’s Palace one day later (Aug 3, 4 and 5) and another places “Man of Many Faces and Debts” on Nov 10; the date of “If Cats Disappeared from the City” (May 25) comes from a single guide.</li>
+      <li data-sp><b>Story Confidants.</b> Igor, Morgana, Justine and Caroline, and Sae are under Ranks, at the end. Sae has no fixed date from R7 to R9 (she advances with her Palace), and Justine and Caroline rank up with fusion requests, not dates. The World has no ranks or perks: sources list it as a story-only arcana.</li>
+      <li><b>Sources.</b> Prima Games, RPG Site, GameFAQs, Ludo, The Gamer and Megami Tensei Wiki, cross-checked against each other. If something doesn’t match your playthrough, availability may depend on your stats or pending requests.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function(){
+  var DAYS=[['MON','Monday'],['TUE','Tuesday'],['WED','Wednesday'],['THU','Thursday'],['FRI','Friday'],['SAT','Saturday'],['SUN','Sunday']];
+  var L=['M','T','W','T','F','S','S'];
+  var ALL=[0,1,2,3,4,5,6];
+  var MONTHS=['','January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // Level names for each social stat (1 to 5).
+  var STAT_NAMES={
+    'Knowledge':['Oblivious','Learned','Scholarly','Encyclopedic','Erudite'],
+    'Charm':['Existent','Head-turning','Suave','Charismatic','Debonair'],
+    'Kindness':['Inoffensive','Considerate','Empathetic','Selfless','Angelic'],
+    'Guts':['Milquetoast','Bold','Staunch','Dauntless','Lionhearted'],
+    'Proficiency':['Bumbling','Decent','Skilled','Masterful','Transcendent']
+  };
+  var STAT_KEYS=Object.keys(STAT_NAMES);
+
+  // Milestones per confidant. r = rank. Internal dates are month/day; they are displayed as e.g. "Apr 22".
+  function S(r,s,lv,note){return {r:r,k:'stat',s:s,lv:lv,n:note||''};}
+  function M(r,name,o){o=o||{};return {r:r,k:'mem',name:name,given:o.given||'',need:o.need||'',area:o.area||''};}
+  function F(r,d,ev,t,sp){return {r:r,k:'fecha',d:d,ev:ev,t:t,sp:sp||''};}
+  function Q(r,t,sp){return {r:r,k:'req',t:t,sp:sp||''};}
+  function P(r,name,fx){return {r:r,k:'perk',name:name,fx:fx||''};}
+  function K(r,d,t){return {r:r,k:'fecha',d:d,ev:'rank',t:t||'Ranks up with the story'};}
+  var HARI='Chance to cure an ally’s ailments',END='Chance to survive a fatal hit with 1 HP',PRO='Chance to cover Joker from a fatal hit',
+      FUP='Chance of a follow-up attack if Joker doesn’t knock down the enemy',SEC='Evolves their Persona',THI='Evolves their Persona (Third Semester only)',
+      TALK='Retry negotiation after failing with a Shadow of the matching type';
+  var R11='Rank 11 (Third Awakening): from Jan 13, Third Semester only';
+  var G7='After R7 (event 7.1)';
+
+  // day/night: indices 0=Monday … 6=Sunday. dayMaybe: only some months.
+  var C=[
+    {id:'makoto',name:'Makoto',arc:'Priestess',n:'II',day:[1,3,5,6],night:[],where:'Student council / Shujin gate',ms:[
+      F(1,'6/25','start','Starts after Kaneshiro’s Palace'),S(1,'Knowledge',3),S(6,'Charm',5),F(11,'1/13','unlock',R11)]},
+    {id:'haru',name:'Haru',arc:'Empress',n:'III',day:[0,1,2,3,4,5],night:[],where:'Shujin rooftop',ms:[
+      F(1,'10/30','start','Starts after Okumura’s Palace'),S(2,'Proficiency',5,'GameFAQs places it at R4'),F(11,'1/13','unlock',R11)]},
+    {id:'yusuke',name:'Yusuke',arc:'Emperor',n:'IV',day:ALL,night:[],where:'Shibuya Underground Walkway',ms:[
+      F(1,'5/18','start','Starts after Madarame’s Palace'),S(6,'Proficiency',4),F(11,'1/13','unlock',R11)]},
+    {id:'sojiro',name:'Sojiro',arc:'Hierophant',n:'V',day:[],night:[0,1,3,4,5,6],where:'Leblanc',ms:[
+      F(1,'4/20','start','Starts'),Q(3,'Make coffee once'),
+      F(4,'','lock','Capped at R4 until Futaba’s Palace is completed'),
+      F(5,'8/22','unlock','R5 unlocks (with Futaba’s Palace completed)'),
+      S(7,'Kindness',5),
+      M(8,'The Money-Grubbing Uncle',{given:'After R8 (8.1), by talking to Futaba outside Leblanc; it’s a solo request',need:'R9',area:'Adyeshach 0'})]},
+    {id:'ann',name:'Ann',arc:'Lovers',n:'VI',day:[0,1,2,4,6],night:[],where:'Shibuya Underground Mall',ms:[
+      F(1,'4/15','start','Starts (story)'),S(2,'Kindness',2),F(11,'1/13','unlock',R11)]},
+    {id:'ryuji',name:'Ryuji',arc:'Chariot',n:'VII',day:ALL,night:[],where:'Classroom (Mon–Fri) · Shibuya arcade (weekends)',ms:[
+      F(1,'4/12','start','Starts (story)'),F(5,'5/6','unlock','R5 unlocks (Protein Lovers gym)'),
+      Q(7,'At night: wait for Ryuji to text you (in Royal, Wednesdays and Fridays)'),F(11,'1/13','unlock',R11)]},
+    {id:'akechi',name:'Akechi',arc:'Justice',n:'VIII',day:[],night:[0,1,2,3,4,5],where:'Penguin Sniper, Kichijōji',ms:[
+      F(1,'5/10','start','Starts automatically'),S(3,'Charm',3),S(3,'Knowledge',3),
+      F(6,'9/3','unlock','R6 unlocks'),F(7,'11/2','unlock','R7 unlocks'),S(7,'Knowledge',4),
+      F(8,'11/17','deadline','Reach R8 (Mementos fight) before Nov 17 to get R9 and R10'),
+      Q(9,'R9 and R10 trigger automatically in Shido’s Palace if you did R8 in time'),
+      F(11,'2/2','unlock','R11 is automatic on Feb 2 if you completed R10 and kept the promise')]},
+    {id:'futaba',name:'Futaba',arc:'Hermit',n:'IX',day:[2,3,5,6],night:[],where:'Outside Leblanc',ms:[
+      F(1,'8/31','start','Starts when her Palace is completed'),S(2,'Kindness',4),
+      M(7,"Daughter's Just a Meal Ticket",{given:'On reaching R7',need:'R8',area:'Adyeshach 3'}),F(11,'1/13','unlock',R11)]},
+    {id:'chihaya',name:'Chihaya',arc:'Fortune',n:'X',day:[],night:[1,3,5,6],where:'Fortune-telling stand, Shinjuku',ms:[
+      F(1,'6/22','start','Introduced; starts after 3 visits and the Holy Stone'),Q(1,'¥100,000 to start'),
+      M(1,"Ending the Boyfriend's Abuse",{given:'Before R1 (event 0.3)',need:'R1',area:'Chemdah 3'}),
+      M(7,'Debunking the Psychic!',{given:G7,need:'R8',area:'Kaitul 3'})]},
+    {id:'iwai',name:'Iwai',arc:'Hanged Man',n:'XII',day:[],night:[3,5,6],where:'Untouchable, Shibuya',ms:[
+      F(1,'5/7','start','Starts when you return the mysterious bag from May 4'),S(1,'Guts',4),S(7,'Guts',5,'For event 7.5'),
+      M(7,'Shady Deal in the Shadows',{given:G7,need:'R8',area:'Kaitul 4'})]},
+    {id:'takemi',name:'Takemi',arc:'Death',n:'XIII',day:ALL,night:[],where:'Clinic in Yongen-Jaya',ms:[
+      F(1,'4/18','start','Starts when you visit the clinic'),S(2,'Guts',2),S(7,'Charm',4,'For event 7.5'),
+      M(7,'Bad Medicine',{given:G7,need:'R8',area:'Chemdah 2'})]},
+    {id:'kawakami',name:'Kawakami',arc:'Temperance',n:'XIV',day:[],night:[4,5],where:'Call from the Leblanc phone',ms:[
+      F(1,'5/24','start','Starts with Operation Maidwatch (around May 24, after Madarame’s Palace)'),
+      S(1,'Guts',3,'Only listed on GameFAQs'),Q(1,'¥5,000 per call'),
+      M(8,'A Teacher Maid to Suffer',{given:'After R8 (event 8.1)',need:'R9',area:'Chemdah 7'})]},
+    {id:'ohya',name:'Ohya',arc:'Devil',n:'XV',day:[],night:ALL,where:'Crossroads Bar, Shinjuku',ms:[
+      F(1,'6/23','start','Starts when you visit Crossroads Bar'),
+      M(7,'Fighting for Truth of Journalism',{given:G7,need:'R8',area:'Kaitul 9'})]},
+    {id:'oda',name:'Oda',arc:'Tower',n:'XVI',day:[0,1,3,5],night:[],where:'Akihabara arcade',ms:[
+      F(1,'9/4','start','Starts after trying and losing against the boss of “Winners Don’t Use Cheats”'),
+      M(1,"Winners Don't Use Cheats",{given:'From Sep 4: just try it and lose against the boss',need:'R1'}),
+      Q(1,'Opens late: you have little time left to complete it'),
+      M(8,"A Mother's Aggression",{given:'On reaching R8',need:'R9',area:'Adyeshach 11'})]},
+    {id:'togo',name:'Togo',arc:'Star',n:'XVII',day:[],night:[0,2,5,6],where:'Kanda Church',ms:[
+      F(1,'6/25','start','Starts'),S(1,'Charm',3),Q(1,'Yusuke (Emperor) at R2 or higher'),S(7,'Knowledge',5,'For event 7.5'),
+      M(7,'Upstaging the Stage Mother',{given:G7,need:'R8',area:'Akzeriyyuth 6'})]},
+    {id:'mishima',name:'Mishima',arc:'Moon',n:'XVIII',day:[],night:ALL,where:'Central Street, Shibuya',ms:[
+      F(1,'5/6','start','Starts automatically'),Q(1,'Doesn’t appear for 2 or 3 days after each rank up'),
+      M(3,'The Bark and Bite of a Bully',{given:'From May 9',need:'R3'}),
+      M(4,'One Who Bullies Bullies',{given:'After completing the previous one',need:'R4'}),
+      M(5,'Part-time Job, Full-time Hell',{given:'On reaching R4 (from Jun 6)',need:'R5',area:'Chemdah 1'}),
+      M(6,'Calling for Justice for Cats',{given:'From Aug 4 (added in Royal)',need:'R6'}),
+      M(6.5,"Who's Been Assaulting People?",{given:'Mishima gives it to you on the previous rank up',need:'R6.5'}),
+      M(8,"We Aren't Just Your Slaves",{given:'Mishima gives it to you on the previous rank up',need:'R8'}),
+      M(8,"Who's Muscling in Yongen-Jaya?",{given:'Mishima gives it to you on the previous rank up',need:'R8'}),
+      M(9,'Man of Many Faces and Debts',{given:'On reaching R8 (from Sep 19)',need:'R9',area:'Akzeriyyuth 3'}),
+      M(10,'The Killer Who Cleans Up Trash',{given:'Mishima gives it to you on the previous rank up',need:'R10'}),
+      M(10,'Swindling Old Folk is Pretty Low',{given:'Mishima gives it to you on the previous rank up',need:'R10'})]},
+    {id:'yoshida',name:'Yoshida',arc:'Sun',n:'XIX',day:[],night:[6],where:'Shibuya Station Square',ms:[
+      F(1,'6/5','start','Starts after 2 night shifts at Beef Bowl'),Q(1,'After R1 he’s only there on Sunday nights'),
+      F(10,'11/13','deadline','Reach R10 before Nov 13 or he can no longer be maxed')]},
+    {id:'maruki',name:'Maruki',arc:'Councillor',n:'',day:[0,1,2,4],night:[],where:'Infirmary, practice building',ms:[
+      F(1,'5/13','start','R1 and R2 trigger automatically'),F(5,'','lock','Capped at R5 until Sep 20','9/20'),
+      F(6,'9/20','unlock','R6 unlocks'),
+      F(9,'11/17','deadline','Reach R9 before Nov 17 to access the Third Semester','11/17'),
+      F(10,'11/18','unlock','R10 is automatic on Nov 18 if you did R9 in time')]},
+    {id:'kasumi',name:'Kasumi',arc:'Faith',n:'',day:[2],dayMaybe:[3,6],night:[],where:'Kichijōji, at lunchtime and after school',ms:[
+      F(1,'5/30','start','R1 is automatic'),
+      F(2,'6/8','unlock','R2: Jun 8 only (she texts you)'),F(3,'6/29','unlock','R3: Jun 29 only'),
+      F(4,'7/7','unlock','R4: Jul 7 only'),F(5,'7/28','unlock','R5: Jul 28 only'),
+      Q(6,'From R6 onward requires Maruki R9 before Nov 17 (Third Semester)','11/17'),
+      F(5.5,'1/9','unlock','R5.5 (story event) from Jan 9'),
+      F(6,'1/13','unlock','R6: Jan 13 only'),F(7,'1/14','unlock','R7: Jan 14 only'),
+      F(8,'1/16','unlock','R8: Jan 16 only'),F(9,'1/18','unlock','R9: Jan 18 only')]}
+  ];
+  // Story confidants: not in the weekly grid. Date of each rank in K(rank, 'month/day', text).
+  C.push(
+    {id:'igor',name:'Igor',arc:'Fool',n:'0',story:1,day:[],night:[],trig:'Ranks up automatically with the story',where:'Velvet Room',ms:[
+      F(1,'4/12','start','Starts (story)'),
+      K(2,'','First free infiltration of Kamoshida’s Palace'),K(3,'5/5'),K(4,'','When Madarame’s Palace is completed'),K(5,'6/11'),
+      K(6,'','When Kaneshiro’s Palace is completed'),K(7,'8/22'),K(8,'8/31'),K(9,'10/11'),K(10,'12/24','Requires the Good ending or better')]},
+    {id:'morgana',name:'Morgana',arc:'Magician',n:'I',story:1,day:[],night:[],trig:'Ranks up automatically with the story',where:'With you throughout the game',ms:[
+      F(1,'4/15','start','Starts (story)'),
+      K(2,'','During Kamoshida’s Palace'),K(3,'','When Madarame’s Palace is completed'),K(4,'6/20'),K(5,'','When Kaneshiro’s Palace is completed'),
+      K(6,'7/25'),K(7,'8/29'),K(8,'9/17'),K(9,'','When Okumura’s Palace is completed'),K(10,'12/23'),
+      K(11,'1/10','Third Semester only')]},
+    {id:'justine',name:'Justine and Caroline',arc:'Strength',n:'XI',story:1,day:[],night:[],trig:'Ranks up when you fuse Personas with that skill',where:'Velvet Room, any day',ms:[
+      F(1,'5/18','start','Available from May 18'),
+      Q(1,'Request: fuse Jack Frost with Mabufu'),Q(2,'Request: fuse Ame-no-Uzume with Frei'),Q(3,'Request: fuse Flauros with Tarukaja'),
+      Q(4,'Request: fuse Phoenix with Counter'),Q(5,'Request: fuse Setanta with Rakukaja'),Q(6,'Request: fuse Neko Shogun with Dekaja'),
+      Q(7,'Request: fuse Lachesis with Tetraja'),Q(8,'Request: fuse Hecatoncheires with Masukunda'),Q(9,'Request: fuse Bugs with Samarecarm'),
+      Q(10,'Request: fuse Seth with High Counter'),
+      Q(10,'Royal: the invitation hangouts at various locations give skill cards; completing them all unlocks a special hangout in the Third Semester')]},
+    {id:'sae',name:'Sae',arc:'Judgement',n:'XX',story:1,day:[],night:[],trig:'Ranks up with the story',where:'Sae’s Palace story',ms:[
+      F(1,'7/9','start','Starts (story)'),
+      K(2,'7/24'),K(3,'8/22'),K(4,'9/13'),K(5,'10/12'),K(6,'10/28'),
+      K(7,'','No fixed date: advances with her Palace'),K(8,'','No fixed date: advances with her Palace'),K(9,'','No fixed date: advances with her Palace'),
+      K(10,'11/20','Requires the Normal ending or better')]}
+  );
+
+  // Perks per rank (Royal). Each one is shown under Milestones and as the “next perk”.
+  var PERKS={
+    igor:[P(1,'Wild Talk','Negotiate with Shadows during a Hold Up'),P(1,'Arcana Burst','Fusions give extra EXP based on the arcana’s rank'),
+      P(2,'Third Eye','See action icons and hidden treasures'),P(3,'Power Stock','Store up to 8 Personas'),P(5,'Super Stock','Store up to 10 Personas'),
+      P(6,'High Arcana Burst','More extra EXP from fusions'),P(8,'Ultra Stock','Store up to 12 Personas'),P(10,'Max Arcana Burst','Even more extra EXP from fusions')],
+    morgana:[P(1,'Infiltration Tools','You can craft basic tools'),P(3,'Follow Up',FUP),P(4,'Kitty Talk','Retry negotiation after failing with an animal Shadow'),
+      P(5,'Pickpocket','Chance to steal an item when attacking in melee'),P(6,'Ace Tools','You can craft all tools'),P(7,'Harisen Recovery',HARI),
+      P(8,'Endure',END),P(9,'Protect',PRO),P(10,'Second Awakening',SEC),P(11,'Third Awakening',THI)],
+    justine:[P(1,'Group Guillotine','Fusions of 3 Personas'),P(3,'Lockdown','Personas in lockdown can gain resistance skills'),
+      P(5,'Special Treatment','You can fuse Personas above your level'),P(8,'Guillotine Booster','Fusions of 4 or more Personas'),P(10,'VIP Treatment','Discount on special measures')],
+    sae:[P(10,'True Justice','The effect is not listed in the source')],
+    makoto:[P(1,'Shadow Calculus','See the enemy’s skills and possible drops'),P(3,'Follow Up',FUP),P(4,'Black Belt Talk','Retry negotiation after failing with a martial arts Shadow'),
+      P(6,'Harisen Recovery',HARI),P(7,'Shadow Factorization','An X appears on the cursor if the attack is ineffective'),P(8,'Endure',END),P(9,'Protect',PRO),
+      P(10,'Second Awakening',SEC),P(11,'Third Awakening',THI)],
+    haru:[P(2,'Cultivation','Unlocks vegetable growing'),P(4,'Follow Up',FUP),P(5,'Celeb Talk',TALK),P(6,'Bumper Crop','Harvests yield 1 more'),
+      P(7,'Harisen Recovery',HARI),P(8,'Soil Improvement','Reduces growing time'),P(9,'Endure',END),P(10,'Protect',PRO),P(10,'Second Awakening',SEC),P(11,'Third Awakening',THI)],
+    yusuke:[P(1,'Card Duplication','Yusuke duplicates Skill Cards'),P(3,'Follow Up',FUP),P(4,'Art Talk',TALK),P(5,'Card Creation','Yusuke creates Skill Cards'),
+      P(6,'Harisen Recovery',HARI),P(7,'Live Painting','Uses Card Duplication and Card Creation on the spot'),P(8,'Endure',END),P(9,'Protect',PRO),
+      P(10,'Second Awakening','Goemon becomes Susano-o'),P(11,'Third Awakening','Susano-o becomes Gorokichi (Third Semester only)')],
+    sojiro:[P(2,'Coffee Basics','Basic coffee recipes'),P(4,'Leblanc Curry','Leblanc curry recipe'),P(6,'Coffee Mastery','Coffee that restores 100 SP to an ally'),
+      P(9,'Curry Tips','Curry that restores 50 SP to everyone'),P(10,'Curry Mastery','Curry that restores 100 SP to everyone')],
+    ann:[P(2,'Girl Talk','Retry negotiation after failing with a female Shadow'),P(4,'Follow Up',FUP),P(5,'Sexy Technique','Chance to cancel an enemy attack'),
+      P(6,'Crocodile Tears','Chance to lower the enemy’s demands when negotiating'),P(7,'Harisen Recovery',HARI),P(9,'Endure',END),P(10,'Protect',PRO),
+      P(10,'Second Awakening',SEC),P(11,'Third Awakening',THI)],
+    ryuji:[P(2,'Punk Talk','Retry negotiation after failing with an “upbeat” Shadow'),P(3,'Follow Up',FUP),P(4,'Stealth Dash'),P(6,'Harisen Recovery',HARI),
+      P(7,'Insta-kill','Instantly win an ambush against green enemies (10 levels or less)'),P(10,'Second Awakening',SEC),P(11,'Third Awakening',THI)],
+    akechi:[P(2,'Sleuthing Instinct','Chance to reveal 1 elemental resistance at the start of battle'),P(4,'Sleuthing Mastery'),P(7,'Harisen Recovery',HARI),
+      P(10,'Endure',END),P(10,'Protect',PRO),P(11,'Third Awakening',THI)],
+    futaba:[P(2,'Moral Support','Chance to cast a random -kaja or heal the whole party'),P(4,'Position Hack','Chance to start battle with a Hold Up'),
+      P(6,'Active Support','Adds Charge and SP recovery to Moral Support'),P(7,'Treasure Reboot','Chance to restock Palace items after a battle'),
+      P(9,'Emergency Shift','Chance to bring in the reserve party if 2 or more fall'),P(10,'Final Guard','Chance to negate a fatal hit for the whole party'),
+      P(10,'Second Awakening',SEC),P(11,'Third Awakening',THI)],
+    chihaya:[P(1,'Luck Reading'),P(3,'Money Reading'),P(5,'Affinity Reading'),P(7,'Special Fate Reading'),P(8,'Celestial Reading'),P(10,'Special Bond Reading')],
+    iwai:[P(1,'Starter Customization','Standard weapon customization'),P(3,'Camo Customization','You can add ailments to weapons'),P(5,'Discount','Customizing costs half'),
+      P(7,'Expert Customization','You can customize high-grade weapons'),P(10,'On The House','All customizations are free')],
+    takemi:[P(1,'Rejuvenation','More variety of healing items at the clinic'),P(3,'Sterilization','Adds more healing items'),P(5,'Immunization','Adds support items'),
+      P(7,'Discount','50% off everything at the clinic'),P(10,'Resuscitation','More revival items and Death’s final Persona (Alice)')],
+    kawakami:[P(1,'Slack Off','Lets you slack off at school'),P(3,'Housekeeping','Does minor chores for you, like laundry or making coffee'),P(5,'Free Time'),
+      P(6,'Super Housekeeping'),P(10,'Special Massage','After infiltrating the Metaverse she gives you a massage and you can go out at night')],
+    ohya:[P(3,'Shocking Scoop','Reduces the effect of being spotted, and reduces it more after an ambush'),P(5,'Unprecedented Scoop','Lowers the starting security level when entering the Metaverse'),
+      P(7,'Outrageous Scoop','Lowers the starting security level even further'),P(10,'Legendary Scoop','You can ambush even when the security level is high')],
+    oda:[P(1,'Down Shot'),P(2,'Bullet Hail'),P(3,'Warning Shot'),P(5,'Laced Bullets'),P(6,'Cheap Shot'),P(8,'Electric Slug'),
+      P(10,'Oda Special','Joker’s weapon pierces all resistances')],
+    togo:[P(1,'Koma Sabaki','Switch to the reserve party on Joker’s turn'),P(3,'Uchikomi'),P(5,'Kakoi Kuzushi'),P(7,'Narikin'),P(9,'Touryou'),
+      P(10,'Togo System','Switch to the reserve party on anyone’s turn')],
+    mishima:[P(2,"Mishima's Support",'The reserve party gains some EXP'),P(4,"Mishima's Enthusiasm",'More EXP for the active party'),
+      P(6,"Mishima's Desperation",'More EXP for the reserve party'),P(7,'Phanboy','Much more EXP for the active party'),
+      P(10,'Salvation Wish','The reserve party gains the same EXP as the active party')],
+    yoshida:[P(2,'Diplomacy','You can ask for more money or items'),P(4,'Fundraising','You can ask for a lot more money'),P(5,'Manipulation','Better chances of getting rare items'),
+      P(7,'Mind Control','Sometimes you skip the negotiation when asking for a Persona'),P(9,'Charismatic Speech','You can recruit Personas of a higher level than your own')],
+    maruki:[P(2,'Detox X','Chance to instantly cure yourself of an ailment'),P(3,'Flow','Chance to start battle with Charge and Concentrate'),
+      P(5,'Mindfulness','Chance to recover SP when you’re running low'),P(7,'Flow Boost','Higher chance of triggering Joker Zone'),
+      P(9,'Detox DX','Raises the chance of Detox X'),P(10,'Wakefulness','Raises the chance of Mindfulness and recovers more SP')],
+    kasumi:[P(2,'Tumbling','Chance to dodge when detected and start battle with an ambush'),P(10,'Second Awakening',SEC),P(11,'Third Awakening',THI)]
+  };
+  // When it rains: who can be seen that day.
+  var RAIN={ann:1,yusuke:1,akechi:1,iwai:1,ohya:1,togo:1,mishima:1};
+  var ids={};C.forEach(function(c){ids[c.id]=c;c.rain=!!RAIN[c.id];(PERKS[c.id]||[]).forEach(function(p){c.ms.push(p);});c.ms.forEach(function(m,i){m._i=i;});c.ms.sort(function(a,b){return a.r-b.r||a._i-b._i;});});
+  C.forEach(function(c){var nd='';for(var q=c.ms.length-1;q>=0;q--){var z=c.ms[q];if(z.k==='fecha'&&z.ev==='rank'){if(z.d)nd=z.d;else if(nd)z.spd=nd;}}c.gates=[];c.ms.forEach(function(m){if(m.k==='fecha'&&(m.ev==='unlock'||m.ev==='rank')&&m.d)c.gates.push({r:m.r,o:ord(m.d)});});});
+
+
+  // All Mementos requests (Royal). d = fixed date (month/day); if none, it opens when you rank up a confidant (cf, r).
+  function X(n,z,d,w,cf,r){return {n:n,z:z,d:d||'',w:w||'',cf:cf||'',r:r||0};}
+  var MEMS=[
+    X('Beware the Clingy Ex-boyfriend','Qimranut 1','5/7','Tutorial request'),
+    X('The Bark and Bite of a Bully','Aiyatsbus 2','5/9'),
+    X('If Cats Disappeared from the City','Aiyatsbus 6','5/25','A day after Madarame’s Palace (approx.)'),
+    X("An Elderly's Meaning of Life",'Aiyatsbus 3','6/5'),
+    X('Sadism Is Just a Sign of Love','Aiyatsbus 7','6/6'),
+    X('Phantom Thieves VS Burglary Ring','Chemdah 4','6/18'),
+    X('The Lovesick Cyberstalking Girl','Chemdah 8','7/10'),
+    X("We Aren't Just Your Slaves",'Kaitul 8','8/2','A day after Futaba’s Palace'),
+    X("Who's Been Assaulting People?",'Kaitul 5','8/3','Two days after Futaba’s Palace'),
+    X('Calling for Justice for Cats','Kaitul 1','8/4','Three days after Futaba’s Palace (Royal only)'),
+    X("Who's Muscling in Yongen-Jaya?",'Kaitul 10','8/29'),
+    X("Winners Don't Use Cheats",'Akzeriyyuth 5','9/4','Just try it and lose against the boss: it opens Oda’s (Tower) confidant link'),
+    X('The Killer Who Cleans Up Trash','Akzeriyyuth 12','10/14'),
+    X('Swindling Old Folk is Pretty Low','Adyeshach 13','11/25'),
+    X('The Head Honcho in Showbiz','Sheriruth 14','12/3','A day after Shido’s Palace'),
+    X("Lady-Killer's Ballad",'Sheriruth 8','12/10'),
+    X('A Small Cry for Help',"Da'at 3",'1/13','Third Semester'),
+    X('O My Young Sister, I Cry for You',"Da'at 7",'1/14','Third Semester'),
+    X('Fake-Man Show',"Da'at 15",'1/27','A day after securing the route to the Treasure in Maruki’s Palace'),
+    X('An Idol and a Unicorn',"Da'at 13",'1/28','Two days after securing the route to the Treasure in Maruki’s Palace'),
+    X('One Who Bullies Bullies','Aiyatsbus 5','','Mishima (Moon) R3, and having done “The Bark and Bite of a Bully” first','mishima',3),
+    X('Part-time Job, Full-time Hell','Chemdah 1','','Mishima (Moon) R4 (not before Jun 6)','mishima',4),
+    X("Ending the Boyfriend's Abuse",'Chemdah 3','','After visiting Chihaya’s stand three times (event 0.3, before her R1)','chihaya',0.3),
+    X('Bad Medicine','Chemdah 2','','Takemi (Death), event 7.1 after R7','takemi',7),
+    X('A Teacher Maid to Suffer','Chemdah 7','','Kawakami (Temperance), event 8.1 after R8','kawakami',8),
+    X('Debunking the Psychic!','Kaitul 3','','Chihaya (Fortune), event 7.1 after R7','chihaya',7),
+    X('Shady Deal in the Shadows','Kaitul 4','','Iwai (Hanged Man), event 7.1 after R7','iwai',7),
+    X('Fighting for Truth of Journalism','Kaitul 9','','Ohya (Devil), event 7.1 after R7','ohya',7),
+    X('Man of Many Faces and Debts','Akzeriyyuth 3','','Mishima (Moon) R8 (not before Sep 19)','mishima',8),
+    X('Upstaging the Stage Mother','Akzeriyyuth 6','','Togo (Star), event 7.1 after R7','togo',7),
+    X('The Money-Grubbing Uncle','Adyeshach 0','','Sojiro (Hierophant), event 8.1 after R8; it’s a solo request','sojiro',8),
+    X("Daughter's Just a Meal Ticket",'Adyeshach 3','','Futaba (Hermit), on reaching R7','futaba',7),
+    X("A Mother's Aggression",'Adyeshach 11','','Oda (Tower), on reaching R8','oda',8)
+  ];
+  function normN(s){return String(s).toLowerCase().replace(/[^a-z0-9]/g,'');}
+  var MEMLINK={};
+  C.forEach(function(c){c.ms.forEach(function(m){if(m.k==='mem')MEMLINK[normN(m.name)]={c:c,m:m};});});
+  MEMS.forEach(function(x){x.k=normN(x.n);x.fam=x.z.split(' ')[0];x.link=MEMLINK[normN(x.n)]||null;});
+  // Rank-based requests have no date of their own: they count as visible once their area opens (the earliest date of another request in that area).
+  MEMS.forEach(function(x){
+    if(x.d)return;
+    var e='';
+    MEMS.forEach(function(y){if(y.d&&y.fam===x.fam&&(!e||ord(y.d)<ord(e)))e=y.d;});
+    x.e=e;
+  });
+
+  var SUN='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="currentColor"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M12.6 3.4l-1.4 1.4M4.8 11.2l-1.4 1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>';
+  var MOON='<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M13 9.6A5.6 5.6 0 0 1 6.4 3a5.6 5.6 0 1 0 6.6 6.6z" fill="currentColor"/></svg>';
+  var RAINSVG='<svg class="rain" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4.6 9.4A3 3 0 0 1 5 3.5a4 4 0 0 1 7.6.9A2.6 2.6 0 0 1 12 9.4z" fill="currentColor"/><path d="M5.2 11.3l-1 2.6M8.6 11.3l-1 2.6M12 11.3l-1 2.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>';
+  var CHECK='<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"/></svg>';
+
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function parseD(d){var p=d.split('/');return {m:+p[0],d:+p[1]};}
+  function fmtD(d){var x=parseD(d);return MABBR[x.m]+' '+x.d;}
+  function ord(d){var x=parseD(d);return (x.m<4?x.m+12:x.m)*100+x.d;}
+  function statLabel(m){return m.s+' '+m.lv;}
+  var MABBR=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var MORDER=[4,5,6,7,8,9,10,11,12,1,2,3];
+  function yearOf(mo){return '20XX';}
+  function startD(c){for(var i=0;i<c.ms.length;i++){if(c.ms[i].ev==='start')return c.ms[i].d;}return '4/1';}
+  // State of a confidant in the chosen game month: all (no month), later (not yet), starts (starts this month), active.
+  function monthState(c){
+    var mo=state.month;
+    if(!mo)return {s:'all'};
+    var d=startD(c),so=ord(d),a=ord(mo+'/1'),b=ord(mo+'/31');
+    if(so>b)return {s:'later',d:d};
+    if(so>=a)return {s:'starts',d:d};
+    return {s:'active',d:d};
+  }
+  // Hide spoilers: only applies when a month is chosen.
+  function SP(){return !!(state.spoil&&state.month);}
+  function hiddenC(c){return SP()&&monthState(c).s==='later';}
+  function dOf(m){
+    if(m.sp)return m.sp;
+    if(m.spd)return m.spd;
+    if(m.k==='mem'){var x=/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{1,2})\b/.exec(m.given||'');return x?MABBR.indexOf(x[1])+'/'+x[2]:'';}
+    return '';
+  }
+  function spHidden(m,c){
+    if(!SP())return false;
+    var b=ord(state.month+'/31'),d=dOf(m);
+    if(d&&ord(d)>b)return true;
+    if(m.k==='perk'&&m.r>10&&ord('1/13')>b)return true;
+    if(m.k==='fecha'&&(m.ev==='unlock'||m.ev==='rank'||m.ev==='lock')&&m.d&&ord(m.d)>b)return true;
+    if(m.ev==='start')return false;
+    for(var i=0;i<c.gates.length;i++){if(c.gates[i].r<=m.r&&c.gates[i].o>b)return true;}
+    return false;
+  }
+  function vis(c){return c.ms.filter(function(m){return !spHidden(m,c);});}
+  // Weekly availability by month: 'main', 'maybe' or null.
+  function avail(c,i,slot){
+    var main=(slot==='d'?c.day:c.night)||[],mb=(slot==='d'&&c.dayMaybe)||[];
+    var r=main.indexOf(i)>=0?'main':(mb.indexOf(i)>=0?'maybe':null);
+    var mo=state.month;
+    if(!mo||!r)return r;
+    if(monthState(c).s==='later')return null;
+    if(c.id==='kasumi'){
+      if(mo<=3)return null;
+      if(r==='maybe')return (mo===7||mo===8||mo===12)?'maybe':null;
+    }
+    return r;
+  }
+
+  var KEY='p5r-confidentes-v1';
+  var state={done:{},rank:{},stats:{},month:4,hide:false,hideMax:false,spoil:true,col:{},mem:{},memSort:'date',memHide:false};
+  var openRows={};
+
+  function clean(o){
+    var out={done:{},rank:{},stats:{},month:0,mem:{}};
+    if(o&&typeof o==='object'){
+      var d=o.done||{},r=o.rank||{},s=o.stats||{};
+      C.forEach(function(c){
+        if(d[c.id]===true)out.done[c.id]=true;
+        var n=parseInt(r[c.id],10);
+        if(n>=1&&n<=10)out.rank[c.id]=n;
+      });
+      STAT_KEYS.forEach(function(k){var n=parseInt(s[k],10);if(n>=1&&n<=5)out.stats[k]=n;});
+      var mo=parseInt(o.month,10);if(mo>=1&&mo<=12)out.month=mo;
+      var mm=o.mem||{};MEMS.forEach(function(x){if(mm[x.k]===true)out.mem[x.k]=true;});
+    }
+    return out;
+  }
+  function loadLocal(){
+    try{
+      var raw=localStorage.getItem(KEY);
+      if(raw){var o=JSON.parse(raw);var c=clean(o);state.done=c.done;state.rank=c.rank;state.stats=c.stats;state.month=c.month;state.hide=!!o.hide;state.hideMax=!!o.hideMax;state.spoil=!!o.spoil;state.col=(o.col&&typeof o.col==='object')?o.col:{};state.mem=c.mem;state.memSort=o.memSort==='status'?'status':'date';state.memHide=!!o.memHide;}
+    }catch(e){}
+  }
+  function saveLocal(){
+    try{localStorage.setItem(KEY,JSON.stringify({done:state.done,rank:state.rank,stats:state.stats,month:state.month,hide:state.hide,hideMax:state.hideMax,spoil:state.spoil,col:state.col,mem:state.mem,memSort:state.memSort,memHide:state.memHide}));}catch(e){}
+  }
+  function snapshot(){return {done:state.done,rank:state.rank,stats:state.stats,month:state.month,mem:state.mem};}
+
+  var $story=document.getElementById('story');
+  document.getElementById('rainKey').innerHTML=RAINSVG.replace('class="rain"','class="rain" style="width:13px;height:13px;vertical-align:-2px"');
+  document.getElementById('rainLegend').innerHTML=RAINSVG.replace('class="rain"','class="rain" style="margin-right:4px"')+'appears on rainy days';
+  var $week=document.getElementById('week'),$roster=document.getElementById('roster'),$meter=document.getElementById('meter'),
+      $hide=document.getElementById('hideBtn'),$memHide=document.getElementById('memHideBtn'),$memCount=document.getElementById('memCount'),$hideMax=document.getElementById('hideMaxBtn'),$spoil=document.getElementById('spoilBtn'),$spHint=document.getElementById('spoilHint'),$reset=document.getElementById('resetBtn'),$status=document.getElementById('status'),
+      $skills=document.getElementById('skillsBox'),$mrow=document.getElementById('monthRow'),$mlbl=document.getElementById('monthLbl'),$mes=document.getElementById('mesBox'),$mem=document.getElementById('memBox'),$tl=document.getElementById('tlBox');
+
+  /* ---------- week ---------- */
+  function chip(c,i,slot,maybe){
+    var done=!!state.done[c.id],r=state.rank[c.id]||0;
+    var st=monthState(c),starts=st.s==='starts';
+    var label=c.name+', '+c.arc+', '+(r?'rank '+r:'not started')+(done?', completed':'')+(maybe?', only some months':'')+(starts?', starts on '+fmtD(st.d):'')+(c.rain?', available on rainy days':'');
+    return '<button type="button" class="chip'+(done?' is-done':'')+'" data-act="toggle" data-id="'+c.id+'" data-k="w'+i+slot+c.id+'" aria-pressed="'+done+'" aria-label="'+label+'" title="'+c.name+' · '+c.arc+(starts?' · starts on '+fmtD(st.d):'')+(c.rain?' · available on rainy days':'')+'">'+
+      '<span class="cn">'+c.n+'</span><span class="nm">'+c.name+(c.rain?RAINSVG:'')+(maybe?'<i>*</i>':'')+(starts?'<i>•</i>':'')+'</span>'+
+      '<span class="rp">'+(done?CHECK:(r?'R'+r:'—'))+'</span></button>';
+  }
+  function slotHtml(i,slot){
+    var list=[];
+    C.forEach(function(c){
+      var a=avail(c,i,slot);
+      if(a)list.push({c:c,maybe:a==='maybe'});
+    });
+    if(state.hide)list=list.filter(function(x){return !state.done[x.c.id];});
+    list=list.map(function(x,idx){return {c:x.c,maybe:x.maybe,idx:idx};}).sort(function(a,b){
+      var da=state.done[a.c.id]?1:0,db=state.done[b.c.id]?1:0;return da-db||a.idx-b.idx;});
+    var pending=list.filter(function(x){return !state.done[x.c.id];}).length;
+    var body=list.length?'<div class="chips">'+list.map(function(x){return chip(x.c,i,slot,x.maybe);}).join('')+'</div>':'<p class="empty">'+(state.hide?'All completed':'Nobody this month')+'</p>';
+    return '<div class="slot '+slot+'"><div class="sh">'+(slot==='d'?SUN+'Day':MOON+'Night')+'<em>'+pending+' pending</em></div>'+body+'</div>';
+  }
+  function renderWeek(){
+    $week.innerHTML=DAYS.map(function(d,i){
+      return '<article class="day" aria-label="'+d[1]+'"><div class="dh"><b>'+d[0]+'</b><span>'+d[1]+'</span></div>'+slotHtml(i,'d')+slotHtml(i,'n')+'</article>';
+    }).join('');
+  }
+
+  /* ---------- ranks ---------- */
+  function strip(c){
+    return '<div class="strip" role="img" aria-label="Weekly availability: '+c.name+'">'+ALL.map(function(i){
+      function cell(main,maybe){return main.indexOf(i)>=0?'on':(maybe&&maybe.indexOf(i)>=0?'maybe':'');}
+      var dcl=cell(c.day,c.dayMaybe),ncl=cell(c.night);
+      return '<div class="md" title="'+DAYS[i][1]+(dcl?' · Day':'')+(ncl?' · Night':'')+'">'+L[i]+'<span class="sq '+dcl+'"></span><span class="sq '+ncl+'"></span></div>';
+    }).join('')+'</div>';
+  }
+  function marksHtml(c){
+    var cells=[],i;
+    for(i=0;i<10;i++)cells.push({stat:0,mem:0,fecha:0,req:0,perk:0});
+    vis(c).forEach(function(m){
+      if(m.r>10||m.ev==='start')return;
+      cells[Math.max(1,Math.floor(m.r))-1][m.k]=1;
+    });
+    return '<div class="marks" aria-hidden="true">'+cells.map(function(x){
+      var t='';['stat','mem','fecha','req','perk'].forEach(function(k){if(x[k])t+='<i class="m-'+k+'"></i>';});
+      return '<span class="mk">'+t+'</span>';
+    }).join('')+'</div>';
+  }
+  function met(m){return m.k==='stat'&&(state.stats[m.s]||0)>=m.lv;}
+  function brief(m){
+    if(m.k==='stat')return statLabel(m)+' ('+STAT_NAMES[m.s][m.lv-1]+')';
+    if(m.k==='mem')return 'Mementos request “'+m.name+'”';
+    return (m.d?fmtD(m.d)+' · ':'')+m.t;
+  }
+  function nextHtml(c,rank,done){
+    if(done)return '';
+    var ms=vis(c),nx=null;
+    for(var i=0;i<ms.length;i++){var m=ms[i];if(m.k!=='perk'&&m.r<=10&&m.r>rank&&!(m.k==='stat'&&met(m))){nx=m;break;}}
+    var pk=null;
+    for(var j=0;j<ms.length;j++){var p=ms[j];if(p.k==='perk'&&p.r<=10&&p.r>rank){pk=p;break;}}
+    return (nx?'<div class="next"><b>Next</b>R'+nx.r+' · '+esc(brief(nx))+'</div>':'')+
+      (pk?'<div class="next"><b>Perk</b>R'+pk.r+' · '+esc(pk.name)+(pk.fx?' <em class="fxs">— '+esc(pk.fx)+'</em>':'')+'</div>':'');
+  }
+  var EV={start:'Starts',unlock:'Unlock',deadline:'Deadline',lock:'Lock',rank:'Rank up'};
+  function msLine(m,c){
+    var r='<span class="r">R'+m.r+'</span>',t,tx;
+    if(m.k==='perk'){
+      t='<span class="tag perk">Perk</span>';
+      tx='<b>'+esc(m.name)+'</b>'+(m.fx?' <em>— '+esc(m.fx)+'</em>':'')+((state.rank[c.id]||0)>=m.r?'<span class="ok">✓ unlocked</span>':'');
+    }else if(m.k==='stat'){
+      t='<span class="tag stat">Stat</span>';
+      tx='<b>'+m.s+' '+m.lv+'</b> · '+STAT_NAMES[m.s][m.lv-1]+(m.n?' <em>— '+esc(m.n)+'</em>':'')+(met(m)?'<span class="ok">✓ already met</span>':'');
+    }else if(m.k==='mem'){
+      t='<span class="tag mem">Mementos</span>';
+      tx='<b>“'+esc(m.name)+'”</b> <em>— Given: '+esc(m.given)+'. Needed for '+m.need+(m.area?' · Area '+esc(m.area):'')+'</em>';
+    }else if(m.k==='fecha'){
+      t='<span class="tag ev-'+m.ev+'">'+EV[m.ev]+'</span>';
+      tx=(m.d?'<b>'+fmtD(m.d)+'</b> · ':'')+esc(m.t);
+    }else{
+      t='<span class="tag req">Other</span>';tx=esc(m.t);
+    }
+    return '<li>'+r+t+'<span class="tx">'+tx+'</span></li>';
+  }
+  function monthNote(c){
+    var s=monthState(c);
+    if(s.s==='later')return '<div class="next lt"><b>Not yet</b>Starts on '+fmtD(s.d)+'</div>';
+    if(s.s==='starts')return '<div class="next lt"><b>This month</b>Starts on '+fmtD(s.d)+'</div>';
+    return '';
+  }
+  function rowHtml(c){
+      var done=!!state.done[c.id],r=state.rank[c.id]||0,pips='';
+      for(var n=1;n<=10;n++){
+        pips+='<button type="button" class="pip'+(n<=r?' on':'')+'" role="radio" aria-checked="'+(n===r)+'" aria-label="Rank '+n+'" data-act="rank" data-id="'+c.id+'" data-r="'+n+'" data-k="r'+c.id+n+'">'+n+'</button>';
+      }
+      return '<li class="row'+(done?' is-done':'')+(monthState(c).s==='later'?' later':'')+'">'+
+        '<button type="button" class="ck" data-act="toggle" data-id="'+c.id+'" data-k="c'+c.id+'" aria-pressed="'+done+'" aria-label="Completed: '+c.name+'">'+CHECK+'</button>'+
+        '<div class="who"><b>'+c.name+(c.rain?RAINSVG.replace('aria-hidden="true"','role="img" aria-label="Available on rainy days"').replace('<path','<title>Available on rainy days</title><path'):'')+'</b><span>'+(c.n?c.n+' · ':'')+c.arc+'</span><small>'+esc(c.where)+'</small>'+monthNote(c)+nextHtml(c,r,done)+'</div>'+
+        (c.story?'<div class="trig">'+esc(c.trig)+'</div>':strip(c))+
+        '<div class="rank"><div class="pw"><div class="pips" role="radiogroup" aria-label="Rank of '+c.name+'">'+pips+'</div>'+marksHtml(c)+'</div><div class="read">'+r+'<small>/10</small></div></div>'+
+        '<details class="ms" data-id="'+c.id+'"'+(openRows[c.id]?' open':'')+'><summary data-k="s'+c.id+'">Milestones &amp; perks · '+vis(c).length+'</summary><ul>'+vis(c).map(function(m){return msLine(m,c);}).join('')+'</ul></details>'+
+        '</li>';
+  }
+  function worldHtml(){
+    return '<li class="row story-only"><span></span><div class="who"><b>The World</b><span>XXI · World</span><small>No ranks, dates or perks: sources list it as a story-only arcana, so there is nothing to mark.</small></div></li>';
+  }
+  function renderRoster(){
+    function pick(list){
+      var out=[],nl=0,nm=0;
+      list.forEach(function(c){
+        if(hiddenC(c))nl++;
+        else if(state.hideMax&&state.rank[c.id]===10)nm++;
+        else out.push(c);
+      });
+      var t=[];
+      if(nm)t.push(nm+' maxed hidden');
+      if(nl)t.push(nl+(nl===1?' confidant who appears later':' confidants who appear later')+' (spoilers)');
+      return out.map(rowHtml).join('')+(t.length?'<li class="row story-only"><span></span><div class="who"><small>'+t.join(' · ')+'</small></div></li>':'');
+    }
+    $roster.innerHTML=pick(C.filter(function(c){return !c.story;}));
+    $story.innerHTML=pick(C.filter(function(c){return c.story;}))+(SP()?'':worldHtml());
+  }
+
+  /* ---------- stats ---------- */
+  function renderSkills(){
+    $skills.innerHTML=STAT_KEYS.map(function(s){
+      var mine=state.stats[s]||0,pips='';
+      for(var n=1;n<=5;n++){
+        pips+='<button type="button" class="pip'+(n<=mine?' on':'')+'" role="radio" aria-checked="'+(n===mine)+'" aria-label="Level '+n+'" data-act="stat" data-s="'+s+'" data-lv="'+n+'" data-k="st'+s+n+'">'+n+'</button>';
+      }
+      var rows='';
+      for(var lv=1;lv<=5;lv++){
+        var ents=[];
+        C.forEach(function(c){if(hiddenC(c))return;c.ms.forEach(function(m){if(m.k==='stat'&&m.s===s&&m.lv===lv&&!spHidden(m,c))ents.push({c:c,m:m});});});
+        if(!ents.length)continue;
+        var ok=mine>=lv;
+        rows+='<div class="lv'+(ok?' met':'')+'"><div class="n">'+lv+'<small>'+STAT_NAMES[s][lv-1]+'</small></div><div class="who2">'+
+          ents.map(function(e){
+            var dn=state.done[e.c.id];
+            return '<span class="ent'+(dn||ok?' dim':'')+(dn?' strike':'')+'">'+e.c.name+' <small>R'+e.m.r+'</small>'+(e.m.n?' <i>'+esc(e.m.n)+'</i>':'')+'</span>';
+          }).join('')+(ok?'<span class="ck2">✓ met</span>':'')+'</div></div>';
+      }
+      return '<div class="card"><h3>'+s+'</h3><div class="mine">Your level<div class="pips" role="radiogroup" aria-label="Your level in '+s+'">'+pips+'</div></div>'+rows+'</div>';
+    }).join('');
+  }
+
+  /* ---------- mementos ---------- */
+  function renderMem(){
+    var b=state.month?ord(state.month+'/31'):0,hid=0;
+    function hidden(x){
+      if(!SP())return false;
+      if(x.d)return ord(x.d)>b;
+      var c=ids[x.cf];
+      if(hiddenC(c))return true;
+      if(x.e&&ord(x.e)>b)return true;
+      return spHidden({k:'mem',r:x.r,given:''},c);
+    }
+    function later(x){
+      if(!state.month)return false;
+      if(x.d)return ord(x.d)>b;
+      return monthState(ids[x.cf]).s==='later'||(x.e&&ord(x.e)>b);
+    }
+    function row(x){
+      var nc=x.link?x.link.c:null,own=!!state.mem[x.k],dn=!!(nc&&state.done[nc.id]);
+      var when=x.d?'<b class="dt">'+fmtD(x.d)+'</b>'+(x.w?'<small class="wn">'+esc(x.w)+'</small>':''):esc(x.w);
+      var need=x.link?'<span class="rr">'+esc(x.link.m.need)+'</span> '+esc(x.link.c.name):'—';
+      return '<tr class="'+(own?'is-done ':'')+(own||dn?'dim':(later(x)?'later':''))+'"><td class="ckc"><button type="button" class="ck" data-act="mem" data-key="'+x.k+'" data-k="mm'+x.k+'" aria-pressed="'+own+'" aria-label="Completed: '+esc(x.n)+'">'+CHECK+'</button></td>'+
+        '<td class="mn'+(own?' strike':'')+'">'+esc(x.n)+'</td><td>'+when+'</td><td>'+esc(x.z)+'</td><td>'+need+'</td></tr>';
+    }
+    function group(title,list){
+      return list.length?'<tr class="grp"><td colspan="5">'+title+' · '+list.length+'</td></tr>'+list.map(row).join(''):'';
+    }
+    var byDate=function(p,q){return ord(p.d)-ord(q.d);};
+    var all=MEMS.filter(function(x){if(hidden(x)){hid++;return false;}return true;});
+    var ndone=MEMS.filter(function(x){return state.mem[x.k];}).length;
+    if(state.memHide)all=all.filter(function(x){return !state.mem[x.k];});
+    var dated=all.filter(function(x){return x.d;}).sort(byDate),byRank=all.filter(function(x){return !x.d;});
+    var rows;
+    if(state.memSort==='status'){
+      var pend=dated.filter(function(x){return !state.mem[x.k];}).concat(byRank.filter(function(x){return !state.mem[x.k];}));
+      var fin=dated.filter(function(x){return state.mem[x.k];}).concat(byRank.filter(function(x){return state.mem[x.k];}));
+      rows=group('Pending',pend)+group('Completed',fin);
+    }else{
+      rows=group('Fixed date',dated)+group('Open on rank up',byRank);
+    }
+    if(!rows)rows='<tr class="grp"><td colspan="5">'+(state.memHide&&ndone?'All completed':'No requests to show')+'</td></tr>';
+    if(hid)rows+='<tr class="grp"><td colspan="5">'+hid+(hid===1?' request hidden':' requests hidden')+' (spoilers)</td></tr>';
+    $mem.innerHTML='<thead><tr><th><span class="vh">Completed</span></th><th>Request</th><th>Unlocks</th><th>Area</th><th>Needed for</th></tr></thead><tbody>'+rows+'</tbody>';
+    $memCount.innerHTML='<b>'+ndone+'</b>/'+MEMS.length+' completed';
+    $memHide.setAttribute('aria-checked',String(state.memHide));
+    Array.prototype.forEach.call(document.querySelectorAll('[data-act="memsort"]'),function(el){el.setAttribute('aria-checked',String(el.getAttribute('data-v')===state.memSort));});
+  }
+
+  /* ---------- dates ---------- */
+  function timelineItems(){
+    var items={};
+    C.forEach(function(c){if(hiddenC(c))return;c.ms.forEach(function(m){
+      if(m.k==='fecha'&&m.d&&!c.story&&!spHidden(m,c)){
+        var key=m.d+'|'+m.ev+'|'+m.t;
+        (items[key]=items[key]||{d:m.d,ev:m.ev,t:m.t,who:[]}).who.push(c);
+      }
+    });});
+    return Object.keys(items).map(function(k){return items[k];}).sort(function(a,b){return ord(a.d)-ord(b.d);});
+  }
+  function namesHtml(who){
+    return who.map(function(c){return '<span class="'+(state.done[c.id]?'dim strike':'')+'">'+c.name+'</span>';}).join(', ');
+  }
+  function renderTimeline(){
+    var list=timelineItems();
+    var html='',cur=0;
+    list.forEach(function(it){
+      var mo=parseD(it.d).m;
+      if(mo!==cur){
+        if(cur)html+='</ol></li>';
+        cur=mo;html+='<li><h3'+(mo===state.month?' class="cur"':'')+'>'+MONTHS[mo]+' '+yearOf(mo)+'</h3><ol class="tl">';
+      }
+      var names=namesHtml(it.who);
+      var allDone=it.who.every(function(c){return state.done[c.id];});
+      html+='<li class="ti'+(allDone?' dim':'')+'"><span class="dt">'+fmtD(it.d)+'</span><span><span class="tag ev-'+it.ev+'">'+EV[it.ev]+'</span></span><span class="tx"><b>'+names+'</b> · '+esc(it.t)+'</span></li>';
+    });
+    if(cur)html+='</ol></li>';
+    $tl.innerHTML=html;
+  }
+
+  /* ---------- game month ---------- */
+  function renderMonthBar(){
+    var h='';
+    MORDER.forEach(function(m){
+      h+='<button type="button" class="mb" role="radio" aria-checked="'+(state.month===m)+'" data-act="month" data-m="'+m+'" data-k="m'+m+'">'+MABBR[m]+'</button>';
+    });
+    h+='<button type="button" class="mb all" role="radio" aria-checked="'+(!state.month)+'" data-act="month" data-m="0" data-k="m0">All</button>';
+    $mrow.innerHTML=h;
+    $mlbl.innerHTML='Game month'+(state.month?'<b>'+MONTHS[state.month]+' '+yearOf(state.month)+'</b>':'<b>Whole year</b>');
+  }
+  function evLine(x){
+    return '<li><span class="d">'+fmtD(x.d)+'</span><span class="tag ev-'+x.ev+'">'+EV[x.ev]+'</span><span><b>'+namesHtml(x.who)+'</b> · '+esc(x.t)+'</span></li>';
+  }
+  function renderMes(){
+    var mo=state.month;
+    if(!mo){$mes.hidden=true;$mes.innerHTML='';return;}
+    var a=ord(mo+'/1'),b=ord(mo+'/31'),items=timelineItems();
+    var here=items.filter(function(x){var o=ord(x.d);return o>=a&&o<=b;});
+    var soon=items.filter(function(x){var o=ord(x.d);return x.ev==='deadline'&&o>b&&o<=b+250;});
+    var later=C.filter(function(c){return monthState(c).s==='later';}).sort(function(x,y){return ord(startD(x))-ord(startD(y));});
+    var html='<div><h3>Dates in '+MONTHS[mo]+' '+yearOf(mo)+'</h3>'+(here.length?'<ul>'+here.map(evLine).join('')+'</ul>':'<p class="none">No unlock dates this month.</p>')+'</div>';
+    html+='<div><h3>Not yet appearing</h3>'+(SP()?'<p class="none">Hidden: Hide spoilers is on.</p>':later.length?'<ul>'+later.map(function(c){
+      return '<li class="'+(state.done[c.id]?'dim':'')+'"><span class="d">'+fmtD(startD(c))+'</span><span><b>'+c.name+'</b> · starts</span></li>';}).join('')+'</ul>':'<p class="none">Everyone is already available.</p>')+'</div>';
+    html+='<div><h3>Upcoming deadlines</h3>'+(soon.length?'<ul>'+soon.map(evLine).join('')+'</ul>':'<p class="none">No deadlines in the coming months.</p>')+'</div>';
+    if(mo<=3)html+='<p class="warn">Third Semester: no reliable data was found on changes to the weekly schedules. The grid shows the normal schedules; Kasumi only appears on specific dates (see above).</p>';
+    $mes.innerHTML=html;$mes.hidden=false;
+  }
+
+  function renderMeter(){
+    var d=C.filter(function(c){return state.done[c.id];}).length;
+    var sum=C.reduce(function(a,c){return a+(state.rank[c.id]||0);},0);
+    var max=C.length*10;
+    $meter.innerHTML=
+      '<div class="kpi"><div class="lbl">Completed</div><div class="num">'+d+'<small>/'+C.length+'</small></div><div class="bar"><i style="width:'+(d/C.length*100)+'%"></i></div></div>'+
+      '<div class="kpi"><div class="lbl">Total ranks</div><div class="num">'+sum+'<small>/'+max+'</small></div><div class="bar"><i style="width:'+(sum/max*100)+'%"></i></div></div>';
+  }
+  function render(){
+    var a=document.activeElement,k=a&&a.getAttribute?a.getAttribute('data-k'):null;
+    renderMonthBar();renderMes();renderWeek();renderRoster();renderSkills();renderMem();renderTimeline();renderMeter();
+    $hide.setAttribute('aria-checked',String(state.hide));
+    applyCol();
+    $hideMax.setAttribute('aria-checked',String(state.hideMax));
+    $spoil.setAttribute('aria-checked',String(state.spoil));
+    $spHint.hidden=!state.spoil;
+    $spHint.textContent=state.month?'Hiding what happens after '+MONTHS[state.month]+' '+yearOf(state.month)+': confidants who haven’t started yet, dates and ranks that come later, and story notes.':'Pick a game month above and everything that comes after it is hidden.';
+    Array.prototype.forEach.call(document.querySelectorAll('[data-sp]'),function(n){n.style.display=SP()?'none':'';});
+    if(k){var el=document.querySelector('[data-k="'+k+'"]');if(el&&el!==document.activeElement)el.focus({preventScroll:true});}
+  }
+
+  /* ---------- persistence ---------- */
+  var dbDoc=null,dirty=false,timer=null,chain=Promise.resolve(),STATUS={
+    local:'Saved in this browser',saving:'Saving…',saved:'Saved',error:'Could not save; kept in this browser'};
+  function setStatus(s){$status.textContent=STATUS[s]||'';}
+  function changed(){
+    saveLocal();
+    if(!dbDoc){setStatus('local');return;}
+    dirty=true;setStatus('saving');
+    clearTimeout(timer);
+    timer=setTimeout(function(){chain=chain.then(flush);},400);
+  }
+  function flush(){
+    if(!dbDoc||!dirty)return Promise.resolve();
+    dirty=false;
+    return dbDoc.set(JSON.parse(JSON.stringify(snapshot()))).then(function(){
+      setStatus(dirty?'saving':'saved');
+    },function(){dirty=true;setStatus('error');});
+  }
+  function sameState(c){return JSON.stringify(c)===JSON.stringify(snapshot());}
+
+  /* ---------- collapsible sections ---------- */
+  var SECS=[];
+  function initSections(){
+    Array.prototype.forEach.call(document.querySelectorAll('section[id]'),function(sec){
+      if(sec.id==='semana')return;
+      var h=sec.querySelector('h2');if(!h)return;
+      var body=document.createElement('div');body.className='secb';body.id='b-'+sec.id;
+      while(h.nextSibling)body.appendChild(h.nextSibling);
+      sec.appendChild(body);
+      var btn=document.createElement('button');btn.type='button';btn.className='sech';
+      btn.setAttribute('data-act','sec');btn.setAttribute('data-sec',sec.id);btn.setAttribute('aria-controls',body.id);
+      btn.innerHTML='<span>'+h.innerHTML+'</span><i class="chev" aria-hidden="true"></i>';
+      h.textContent='';h.appendChild(btn);
+      SECS.push(sec.id);
+    });
+  }
+  function applyCol(){
+    var anyOpen=false;
+    SECS.forEach(function(id){
+      var c=!!state.col[id],b=document.getElementById('b-'+id),t=document.querySelector('[data-sec="'+id+'"]');
+      if(b)b.hidden=c;
+      if(t)t.setAttribute('aria-expanded',String(!c));
+      if(!c)anyOpen=true;
+    });
+    var ca=document.getElementById('colAllBtn');
+    if(ca)ca.textContent=anyOpen?'Collapse all':'Expand all';
+  }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest?e.target.closest('.jump a'):null;if(!a)return;
+    var id=(a.getAttribute('href')||'').slice(1);
+    if(state.col[id]){delete state.col[id];saveLocal();applyCol();}
+  });
+
+  /* ---------- events ---------- */
+  var resetArmed=false,resetTimer=null;
+  function disarm(){resetArmed=false;clearTimeout(resetTimer);$reset.classList.remove('warn');$reset.textContent='Reset all';}
+  document.addEventListener('toggle',function(e){
+    var t=e.target;
+    if(t&&t.classList&&t.classList.contains('ms')){openRows[t.getAttribute('data-id')]=t.open;}
+  },true);
+  document.addEventListener('click',function(e){
+    var t=e.target.closest?e.target.closest('button'):null;if(!t)return;
+    var act=t.getAttribute('data-act'),id=t.getAttribute('data-id');
+    if(act==='toggle'&&ids[id]){
+      if(state.done[id])delete state.done[id];else state.done[id]=true;
+      changed();render();
+    }else if(act==='rank'&&ids[id]){
+      var n=parseInt(t.getAttribute('data-r'),10);
+      if(state.rank[id]===n)delete state.rank[id];else state.rank[id]=n;
+      if(n===10&&state.rank[id]===10)state.done[id]=true;
+      changed();render();
+    }else if(act==='stat'){
+      var s=t.getAttribute('data-s'),lv=parseInt(t.getAttribute('data-lv'),10);
+      if(STAT_NAMES[s]){if(state.stats[s]===lv)delete state.stats[s];else state.stats[s]=lv;changed();render();}
+    }else if(act==='month'){
+      var mm=parseInt(t.getAttribute('data-m'),10);
+      state.month=(mm>=1&&mm<=12&&state.month!==mm)?mm:0;
+      changed();render();
+    }else if(t===$hide){
+      state.hide=!state.hide;saveLocal();render();
+    }else if(act==='mem'){
+      var mk=t.getAttribute('data-key');
+      if(MEMS.some(function(x){return x.k===mk;})){if(state.mem[mk])delete state.mem[mk];else state.mem[mk]=true;changed();render();}
+    }else if(act==='memsort'){
+      state.memSort=t.getAttribute('data-v')==='status'?'status':'date';saveLocal();render();
+    }else if(t===$memHide){
+      state.memHide=!state.memHide;saveLocal();render();
+    }else if(act==='sec'){
+      var sid=t.getAttribute('data-sec');
+      if(state.col[sid])delete state.col[sid];else state.col[sid]=true;
+      saveLocal();applyCol();
+    }else if(t.id==='colAllBtn'){
+      var anyOpen=SECS.some(function(x){return !state.col[x];});
+      SECS.forEach(function(x){if(anyOpen)state.col[x]=true;else delete state.col[x];});
+      saveLocal();applyCol();
+    }else if(t===$hideMax){
+      state.hideMax=!state.hideMax;saveLocal();render();
+    }else if(t===$spoil){
+      state.spoil=!state.spoil;saveLocal();render();
+    }else if(t===$reset){
+      if(!resetArmed){resetArmed=true;$reset.classList.add('warn');$reset.textContent='Sure? Click again';resetTimer=setTimeout(disarm,4000);}
+      else{disarm();state.done={};state.rank={};state.stats={};state.month=0;state.mem={};changed();render();}
+    }
+    if(t!==$reset&&resetArmed)disarm();
+  });
+
+  initSections();loadLocal();render();setStatus('local');
+})();
+</script>
+</body>
+</html>
